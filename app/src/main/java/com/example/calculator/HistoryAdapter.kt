@@ -10,19 +10,14 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-/**
- * Показывает записи истории.
- * Лента (под выражением) идёт от старых к новым, плитки — от новых к старым.
- */
+/** Показывает записи истории; какие именно и в каком порядке — решает [entries]. */
 class HistoryAdapter(
-    private val history: History,
     private val layout: Int,
-    private val newestFirst: Boolean,
+    private val entries: () -> List<HistoryEntry>,
 ) : BaseAdapter() {
-    override fun getCount() = history.size
+    override fun getCount() = entries().size
 
-    override fun getItem(position: Int): HistoryEntry =
-        history.entries[if (newestFirst) history.size - 1 - position else position]
+    override fun getItem(position: Int): HistoryEntry = entries()[position]
 
     override fun getItemId(position: Int) = position.toLong()
 

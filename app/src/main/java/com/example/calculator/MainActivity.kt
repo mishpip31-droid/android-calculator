@@ -35,13 +35,20 @@ class MainActivity : Activity() {
     private lateinit var historyList: ListView
     private lateinit var historyGrid: GridView
     private lateinit var historyEmpty: TextView
-    private lateinit var historyHint: TextView
+    private lateinit var searchBar: View
+    private lateinit var searchInput: EditText
+    private lateinit var notesOnlyToggle: TextView
+    private lateinit var converterButton: View
     private lateinit var keypad: View
     private lateinit var toggleHistory: ImageButton
     private lateinit var clearHistory: ImageButton
 
     /** Режим «вся история»: клавиатура скрыта, лента занимает весь экран. */
     private var historyExpanded = false
+
+    /** Плитки с учётом поиска и фильтра «только с заметками». */
+    private var tileEntries: List<HistoryEntry> = emptyList()
+    private var notesOnly = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +60,10 @@ class MainActivity : Activity() {
         historyList = findViewById(R.id.historyList)
         historyGrid = findViewById(R.id.historyGrid)
         historyEmpty = findViewById(R.id.historyEmpty)
-        historyHint = findViewById(R.id.historyHint)
+        searchBar = findViewById(R.id.searchBar)
+        searchInput = findViewById(R.id.searchInput)
+        notesOnlyToggle = findViewById(R.id.btnNotesOnly)
+        converterButton = findViewById(R.id.btnConverter)
         keypad = findViewById(R.id.keypad)
         toggleHistory = findViewById(R.id.btnToggleHistory)
         clearHistory = findViewById(R.id.btnClearHistory)
@@ -61,8 +71,8 @@ class MainActivity : Activity() {
         historyStore = HistoryStore(this)
         history.replaceAll(historyStore.load())
         // Лента под выражением: новые снизу. Плитки на весь экран: новые сверху.
-        listAdapter = HistoryAdapter(history, R.layout.item_history, newestFirst = false)
-        tileAdapter = HistoryAdapter(history, R.layout.item_history_tile, newestFirst = true)
+        listAdapter = HistoryAdapter(R.layout.item_history) { history.entries }
+        tileAdapter = HistoryAdapter(R.layout.item_history_tile) { tileEntries }
         historyList.adapter = listAdapter
         historyGrid.adapter = tileAdapter
 
@@ -72,6 +82,7 @@ class MainActivity : Activity() {
                 it.getBoolean(KEY_EVALUATED, false),
             )
             historyExpanded = it.getBoolean(KEY_HISTORY_EXPANDED, false)
+            notesOnly = it.getBoolean(KEY_NOTES_ONLY, false)
         }
 
         setupKeypad()
@@ -87,6 +98,7 @@ class MainActivity : Activity() {
         outState.putString(KEY_EXPRESSION, calculator.expression)
         outState.putBoolean(KEY_EVALUATED, calculator.justEvaluated)
         outState.putBoolean(KEY_HISTORY_EXPANDED, historyExpanded)
+        outState.putBoolean(KEY_NOTES_ONLY, notesOnly)
     }
 
     @Deprecated("Deprecated in Java")
@@ -130,7 +142,29 @@ class MainActivity : Activity() {
         }
         clearHistory.setOnClickListener { confirmClearHistory() }
 
-        findViewById<View>(R.id.btnConverter).setOnClickListener {
+        searchInput.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) = refreshTiles()
+        })
+        searchInput.setOnEditorActionListener { _, _, _ ->
+            hideKeyboard()
+            true
+        }
+        notesOnlyToggle.setOnClickListener {
+            it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            notesOnly = !notesOnly
+            refreshTiles()
+        }
+        // Прокрутка плиток прячет клавиатуру, чтобы она не закрывала результаты.
+        historyGrid.setOnScrollListener(object : android.widget.AbsListView.OnScrollListener {
+            override fun onScrollStateChanged(view: android.widget.AbsListView, state: Int) {
+                if (state == android.widget.AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) hideKeyboard()
+            }
+            override fun onScroll(view: android.widget.AbsListView, first: Int, visible: Int, total: Int) {}
+        })
+
+        converterButton.setOnClickListener {
             it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
             openConverter()
         }
@@ -258,16 +292,69 @@ class MainActivity : Activity() {
         }
     }
 
+    /**
+     * «Очистить» удаляет только записи без заметок — заметки хранятся всегда.
+     * Удалить вместе с заметками можно отдельной кнопкой с повторным подтверждением.
+     */
     private fun confirmClearHistory() {
-        AlertDialog.Builder(this)
+        val noted = history.notedCount
+        val builder = AlertDialog.Builder(this)
             .setTitle(R.string.clear_history_title)
-            .setMessage(R.string.clear_history_message)
-            .setPositiveButton(R.string.clear) { _, _ ->
+            .setNegativeButton(R.string.cancel, null)
+        if (noted == 0) {
+            builder.setMessage(R.string.clear_history_message_all)
+                .setPositiveButton(R.string.clear) { _, _ ->
+                    history.clear()
+                    onHistoryChanged()
+                }
+        } else {
+            builder.setMessage(getString(R.string.clear_history_message, noted))
+                .setPositiveButton(R.string.clear) { _, _ ->
+                    history.clearUnnoted()
+                    onHistoryChanged()
+                }
+                .setNeutralButton(R.string.clear_all) { _, _ -> confirmClearAll(noted) }
+        }
+        builder.show()
+    }
+
+    private fun confirmClearAll(noted: Int) {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.clear_all_title)
+            .setMessage(getString(R.string.clear_all_message, noted))
+            .setPositiveButton(R.string.clear_all) { _, _ ->
                 history.clear()
                 onHistoryChanged()
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
+    }
+
+    private fun refreshTiles() {
+        tileEntries = history.search(searchInput.text.toString(), notesOnly)
+        tileAdapter.notifyDataSetChanged()
+        notesOnlyToggle.isSelected = notesOnly
+        updateEmptyState()
+    }
+
+    private fun updateEmptyState() {
+        val showTiles = historyExpanded && tileEntries.isNotEmpty()
+        historyGrid.visibility = if (showTiles) View.VISIBLE else View.GONE
+        historyEmpty.visibility = if (historyExpanded && !showTiles) View.VISIBLE else View.GONE
+        historyEmpty.setText(
+            when {
+                history.isEmpty() -> R.string.history_empty
+                searchInput.text.isNotBlank() -> R.string.search_nothing
+                notesOnly -> R.string.notes_empty
+                else -> R.string.search_nothing
+            },
+        )
+    }
+
+    private fun hideKeyboard() {
+        searchInput.clearFocus()
+        getSystemService(android.view.inputmethod.InputMethodManager::class.java)
+            .hideSoftInputFromWindow(searchInput.windowToken, 0)
     }
 
     private fun addToHistory(entry: HistoryEntry) {
@@ -280,12 +367,15 @@ class MainActivity : Activity() {
     private fun onHistoryChanged() {
         historyStore.save(history.entries)
         listAdapter.notifyDataSetChanged()
-        tileAdapter.notifyDataSetChanged()
         applyHistoryMode()
     }
 
     private fun setHistoryExpanded(expanded: Boolean) {
         historyExpanded = expanded
+        if (!expanded) {
+            hideKeyboard()
+            searchInput.setText("")
+        }
         applyHistoryMode()
         if (expanded) historyGrid.setSelection(0) else historyList.post { historyList.setSelection(history.size - 1) }
     }
@@ -294,10 +384,9 @@ class MainActivity : Activity() {
         keypad.visibility = if (historyExpanded) View.GONE else View.VISIBLE
         val empty = history.isEmpty()
         historyList.visibility = if (historyExpanded) View.GONE else View.VISIBLE
-        historyGrid.visibility = if (historyExpanded && !empty) View.VISIBLE else View.GONE
-        // В свёрнутом виде пустую ленту просто не показываем, в развёрнутом — подсказка.
-        historyEmpty.visibility = if (historyExpanded && empty) View.VISIBLE else View.GONE
-        historyHint.visibility = if (historyExpanded && !empty) View.VISIBLE else View.INVISIBLE
+        searchBar.visibility = if (historyExpanded && !empty) View.VISIBLE else View.INVISIBLE
+        converterButton.visibility = if (historyExpanded) View.GONE else View.VISIBLE
+        refreshTiles()
         clearHistory.visibility = if (historyExpanded && !empty) View.VISIBLE else View.GONE
         toggleHistory.setImageResource(if (historyExpanded) R.drawable.ic_keypad else R.drawable.ic_history)
         toggleHistory.contentDescription = getString(
@@ -330,6 +419,7 @@ class MainActivity : Activity() {
         const val KEY_EXPRESSION = "expression"
         const val KEY_EVALUATED = "evaluated"
         const val KEY_HISTORY_EXPANDED = "history_expanded"
+        const val KEY_NOTES_ONLY = "notes_only"
 
         const val MENU_RESULT = 1
         const val MENU_EXPRESSION = 2

@@ -6,15 +6,18 @@
     <string name="desc_history">Показать историю</string>
     <string name="desc_keypad">Показать клавиатуру</string>
     <string name="desc_clear_history">Очистить историю</string>
-    <string name="history_empty">История пуста.\nВычисления появятся здесь — нажмите на запись, чтобы вставить результат.</string>
-    <string name="history_hint">Нажмите — вставить результат, удерживайте — другие действия</string>
-    <string name="menu_insert_result">Вставить результат</string>
+    <string name="history_empty">История пуста.\nВычисления появятся здесь. Нажмите на запись — вставить результат, удерживайте — заметка и другие действия.</string>
+        <string name="menu_insert_result">Вставить результат</string>
     <string name="menu_insert_expression">Вставить выражение</string>
     <string name="menu_copy">Копировать</string>
     <string name="menu_delete">Удалить</string>
     <string name="copied">Скопировано</string>
     <string name="clear_history_title">Очистить историю?</string>
-    <string name="clear_history_message">Все сохранённые вычисления будут удалены.</string>
+    <string name="clear_history_message">Будут удалены вычисления без заметок. Записи с заметками (%1$d) сохранятся.</string>
+    <string name="clear_history_message_all">Все сохранённые вычисления будут удалены.</string>
+    <string name="clear_all">Удалить всё</string>
+    <string name="clear_all_title">Удалить и заметки?</string>
+    <string name="clear_all_message">Будут удалены все вычисления, включая %1$d с заметками. Отменить нельзя.</string>
     <string name="clear">Очистить</string>
     <string name="cancel">Отмена</string>
     <string name="menu_note_add">Добавить заметку</string>
@@ -37,4 +40,9 @@
     <string name="rates_no_connection_empty">Нет связи. Подключитесь к интернету и нажмите «Обновить», чтобы загрузить курсы.</string>
     <string name="rate_unknown">курс не загружен</string>
     <string name="converter_hint">Введите сумму в любой строке — остальные пересчитаются. Можно писать выражения: 100+50</string>
+    <string name="search_hint">Поиск: заметка или число</string>
+    <string name="notes_only">★ Заметки</string>
+    <string name="desc_notes_only">Показывать только записи с заметками</string>
+    <string name="search_nothing">Ничего не найдено</string>
+    <string name="notes_empty">Пока нет заметок.\nУдерживайте запись и выберите «Добавить заметку» — такие записи хранятся всегда.</string>
 </resources>

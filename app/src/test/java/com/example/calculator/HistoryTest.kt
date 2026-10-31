@@ -17,7 +17,7 @@ class HistoryTest {
     }
 
     @Test fun keepsOnlyNewestWhenFull() {
-        val h = History(maxSize = 3)
+        val h = History(maxUnnoted = 3)
         for (i in 1..5) h.add(HistoryEntry("$i+0", "$i", i.toLong()))
         assertEquals(listOf("3", "4", "5"), h.entries.map { it.result })
     }
@@ -146,5 +146,65 @@ class HistoryNoteTest {
         assertNull(c.currentValue())
         c.inputDigit('2'); c.inputOperator('×'); c.inputDigit('3'); c.inputOperator('+')
         assertEquals("6", c.currentValue())
+    }
+}
+
+class HistoryRetentionAndSearchTest {
+    @Test fun notedEntriesAreKeptForever() {
+        val h = History(maxUnnoted = 3)
+        h.add(HistoryEntry("1+1", "2", 1))
+        h.setNote(0, "важное")
+        for (i in 2..10) h.add(HistoryEntry("$i+0", "$i", i.toLong()))
+        assertEquals("важное", h.entries.first().note)
+        assertEquals(listOf("2", "8", "9", "10"), h.entries.map { it.result })
+    }
+
+    @Test fun loadingTrimsOnlyUnnoted() {
+        val h = History(maxUnnoted = 1)
+        h.replaceAll(
+            listOf(
+                HistoryEntry("1+1", "2", 1, "a"),
+                HistoryEntry("2+2", "4", 2),
+                HistoryEntry("3+3", "6", 3, "b"),
+                HistoryEntry("4+4", "8", 4),
+            ),
+        )
+        assertEquals(listOf("2", "6", "8"), h.entries.map { it.result })
+    }
+
+    @Test fun clearUnnotedKeepsNotes() {
+        val h = History()
+        h.add(HistoryEntry("1+1", "2", 1, "аренда"))
+        h.add(HistoryEntry("2+2", "4", 2))
+        h.clearUnnoted()
+        assertEquals(listOf("аренда"), h.entries.map { it.note })
+        assertEquals(1, h.notedCount)
+    }
+
+    private fun sample() = History().apply {
+        add(HistoryEntry("4500×3", "13500", 1, "Аренда квартиры"))
+        add(HistoryEntry("12.5×4", "50", 2, "Продукты, ёлка"))
+        add(HistoryEntry("2−5", "−3", 3))
+    }
+
+    @Test fun searchByNoteIgnoringCase() {
+        assertEquals(listOf("13500"), sample().search("аренда").map { it.result })
+        assertEquals(listOf("50"), sample().search("ЕЛКА").map { it.result })
+    }
+
+    @Test fun searchByNumbersAndOperators() {
+        assertEquals(listOf("50"), sample().search("12,5").map { it.result })
+        assertEquals(listOf("−3"), sample().search("-3").map { it.result })
+        assertEquals(listOf("13500"), sample().search("4500*3").map { it.result })
+    }
+
+    @Test fun allTermsMustMatch() {
+        assertEquals(listOf("13500"), sample().search("аренда 13500").map { it.result })
+        assertTrue(sample().search("аренда продукты").isEmpty())
+    }
+
+    @Test fun emptyQueryReturnsNewestFirst() {
+        assertEquals(listOf("−3", "50", "13500"), sample().search("  ").map { it.result })
+        assertEquals(listOf("50", "13500"), sample().search("", notesOnly = true).map { it.result })
     }
 }
