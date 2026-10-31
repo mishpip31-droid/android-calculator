@@ -1,0 +1,31 @@
+name: Probe bank rate sources (temporary)
+
+on:
+  push:
+    paths: [.github/workflows/probe.yml]
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe
+        run: |
+          probe() {
+            echo "=================== $1"
+            curl -sS -L -m 20 -A "Mozilla/5.0 (Linux; Android 14) Calculator" -o body.txt -w "HTTP %{http_code} size %{size_download} type %{content_type}\n" "$1" || true
+            head -c ${2:-1500} body.txt; echo
+          }
+          probe "https://belarusbank.by/api/kursExchange?city=%D0%9C%D0%B8%D0%BD%D1%81%D0%BA" 1200
+          probe "https://belarusbank.by/api/kursExchange" 600
+          probe "https://developerhub.alfabank.by:8273/partner/1.0.1/public/rates" 2500
+          probe "https://developerhub.alfabank.by:8273/partner/1.0.0/public/rates" 600
+          probe "https://kurs.onliner.by/sdapi/kurs/api/bestrate?currency=USD&type=nbrb" 800
+          probe "https://kurs.onliner.by/sdapi/kurs/api/bestrate" 800
+          probe "https://myfin.by/currency/minsk" 300
+          echo "---- myfin table markers"; grep -o 'currencies-courses__row[^>]*' body.txt | head -5; grep -c 'data-bank' body.txt || true
+          grep -o '<tr[^>]*data-bank[^>]*>' body.txt | head -3 || true
+          probe "https://select.by/kurs/" 300
+          echo "---- select markers"; grep -o 'class="[^"]*bank[^"]*"' body.txt | sort | uniq -c | head -10
+          probe "https://www.priorbank.by/api/currency/rates" 600
+          probe "https://www.bnb.by/api/rates" 300
