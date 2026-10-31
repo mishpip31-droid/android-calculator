@@ -3,4 +3,18 @@
     <string name="desc_backspace">Стереть (удерживайте, чтобы очистить всё)</string>
     <string name="desc_clear">Очистить</string>
     <string name="desc_paren">Скобки</string>
+    <string name="desc_history">Показать историю</string>
+    <string name="desc_keypad">Показать клавиатуру</string>
+    <string name="desc_clear_history">Очистить историю</string>
+    <string name="history_empty">История пуста.\nВычисления появятся здесь — нажмите на запись, чтобы вставить результат.</string>
+    <string name="history_hint">Нажмите — вставить результат, удерживайте — другие действия</string>
+    <string name="menu_insert_result">Вставить результат</string>
+    <string name="menu_insert_expression">Вставить выражение</string>
+    <string name="menu_copy">Копировать</string>
+    <string name="menu_delete">Удалить</string>
+    <string name="copied">Скопировано</string>
+    <string name="clear_history_title">Очистить историю?</string>
+    <string name="clear_history_message">Все сохранённые вычисления будут удалены.</string>
+    <string name="clear">Очистить</string>
+    <string name="cancel">Отмена</string>
 </resources>

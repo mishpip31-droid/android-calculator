@@ -10,7 +10,8 @@ class CalculationException(message: String) : Exception(message)
  * Вычисляет арифметическое выражение методом рекурсивного спуска.
  *
  * Поддерживается: + − × ÷ (также + - * /), скобки, унарный минус,
- * постфиксный процент (50% = 0.5) и неявное умножение: 2(3) = 6.
+ * постфиксный процент (50% = 0.5), неявное умножение: 2(3) = 6,
+ * и экспоненциальная запись: 1.5E20.
  */
 object Evaluator {
     private val MC = MathContext(34, RoundingMode.HALF_EVEN)
@@ -116,11 +117,19 @@ object Evaluator {
             if (c.isDigit() || c == '.') {
                 val start = pos
                 while (peek()?.let { it.isDigit() || it == '.' } == true) pos++
-                val text = s.substring(start, pos)
-                if (text == "." || text.count { it == '.' } > 1) {
-                    throw CalculationException("Неверное число '$text'")
+                val mantissa = s.substring(start, pos)
+                if (mantissa == "." || mantissa.count { it == '.' } > 1) {
+                    throw CalculationException("Неверное число '$mantissa'")
                 }
-                return BigDecimal(text)
+                // Экспонента, например 1.5E-20 (так показываются очень большие/малые результаты).
+                if (peek() == 'E' || peek() == 'e') {
+                    pos++
+                    if (peek() == '-' || peek() == '+') pos++
+                    val digitsStart = pos
+                    while (peek()?.isDigit() == true) pos++
+                    if (pos == digitsStart) throw CalculationException("Неверное число")
+                }
+                return BigDecimal(s.substring(start, pos))
             }
             throw CalculationException("Неожиданный символ '$c'")
         }

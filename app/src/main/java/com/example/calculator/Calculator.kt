@@ -2,6 +2,7 @@ package com.example.calculator
 
 /**
  * Состояние ввода калькулятора. Не зависит от Android, поэтому легко тестируется.
+ * Минус в выражении всегда хранится как «−» (U+2212).
  */
 class Calculator {
     var expression: String = ""
@@ -29,7 +30,7 @@ class Calculator {
         startFresh()
         val number = currentNumber()
         when {
-            number.contains('.') -> return
+            number.contains('.') || number.contains('E') -> return
             last == ')' || last == '%' -> expression += "×0."
             number.isEmpty() -> expression += "0."
             else -> expression += '.'
@@ -38,8 +39,8 @@ class Calculator {
 
     fun inputOperator(op: Char) {
         require(op in OPERATORS)
-        error = null
-        justEvaluated = false
+        resetFlags()
+        if (last == '.' || last == 'E') expression = expression.dropLast(1)
         val l = last
         when {
             l == null || l == '(' -> if (op == '−') expression += op
@@ -48,7 +49,6 @@ class Calculator {
                     expression += op // 5 × −2
                 } else {
                     // Заменяем последний оператор (и, возможно, унарный минус перед ним).
-                    expression = expression.dropLast(1)
                     while (expression.lastOrNull() in OPERATORS) expression = expression.dropLast(1)
                     if (expression.isEmpty() || expression.last() == '(') {
                         if (op == '−') expression += op
@@ -57,31 +57,26 @@ class Calculator {
                     }
                 }
             }
-            l == '.' -> expression = expression.dropLast(1) + op
             else -> expression += op
         }
     }
 
     fun inputPercent() {
-        error = null
-        justEvaluated = false
+        resetFlags()
         val l = last ?: return
         if (l.isDigit() || l == ')') expression += '%'
     }
 
     fun inputOpenParen() {
         startFresh()
+        if (last == '.' || last == 'E') expression = expression.dropLast(1)
         val l = last
-        if (l != null && (l.isDigit() || l == ')' || l == '%' || l == '.')) {
-            if (l == '.') expression = expression.dropLast(1)
-            expression += '×'
-        }
+        if (l != null && (l.isDigit() || l == ')' || l == '%')) expression += '×'
         expression += '('
     }
 
     fun inputCloseParen() {
-        error = null
-        justEvaluated = false
+        resetFlags()
         val l = last ?: return
         if (openParens() > 0 && (l.isDigit() || l == ')' || l == '%')) expression += ')'
     }
@@ -94,29 +89,34 @@ class Calculator {
     }
 
     fun backspace() {
-        error = null
-        justEvaluated = false
+        resetFlags()
         expression = expression.dropLast(1)
     }
 
     fun clear() {
         expression = ""
-        error = null
-        justEvaluated = false
+        resetFlags()
     }
 
-    /** Выполняет «=». */
-    fun evaluate() {
-        if (expression.isEmpty()) return
-        try {
-            val value = Evaluator.evaluate(completed())
-            expression = Evaluator.format(value)
+    /**
+     * Выполняет «=». Возвращает запись для истории, если было что вычислять
+     * (просто число без операций в историю не попадает).
+     */
+    fun evaluate(): HistoryEntry? {
+        if (expression.isEmpty()) return null
+        val expr = completed()
+        return try {
+            val result = displayResult(expr)
+            expression = result
             justEvaluated = true
             error = null
+            if (expr != result && hasOperation(expr)) HistoryEntry(expr, result) else null
         } catch (e: CalculationException) {
             error = e.message
+            null
         } catch (e: ArithmeticException) {
             error = "Ошибка"
+            null
         }
     }
 
@@ -124,13 +124,36 @@ class Calculator {
     fun preview(): String? {
         if (justEvaluated) return null
         val expr = completed()
-        // Показываем только если есть хоть одна операция, иначе это просто число.
-        if (expr.none { it in OPERATORS || it == '%' } && !expr.contains('(')) return null
+        if (!hasOperation(expr)) return null
         return try {
-            Evaluator.format(Evaluator.evaluate(expr))
+            displayResult(expr)
         } catch (e: Exception) {
             null
         }
+    }
+
+    /**
+     * Вставляет число (например, результат из истории).
+     * Если пользователь как раз набирает число, оно заменяется вставленным.
+     */
+    fun insertNumber(value: String) = insert(value, compound = value.startsWith('−'))
+
+    /** Вставляет целое выражение из истории; в середине ввода оно берётся в скобки. */
+    fun insertExpression(expr: String) =
+        insert(expr, compound = expr.any { it in OPERATORS || it == '%' })
+
+    private fun insert(value: String, compound: Boolean) {
+        if (value.isEmpty()) return
+        error = null
+        if (justEvaluated) expression = ""
+        justEvaluated = false
+        val number = currentNumber()
+        expression = expression.dropLast(number.length)
+        if (last == '.' || last == 'E') expression = expression.dropLast(1)
+        val l = last
+        if (l == ')' || l == '%') expression += '×'
+        val inContext = expression.isNotEmpty() && expression.last() != '('
+        expression += if (compound && inContext) "($value)" else value
     }
 
     /** Восстановление состояния (например, после поворота экрана). */
@@ -138,6 +161,11 @@ class Calculator {
         this.expression = expression
         this.justEvaluated = justEvaluated
         error = null
+    }
+
+    private fun resetFlags() {
+        error = null
+        justEvaluated = false
     }
 
     private fun startFresh() {
@@ -148,10 +176,16 @@ class Calculator {
         }
     }
 
+    private fun displayResult(expr: String): String =
+        Evaluator.format(Evaluator.evaluate(expr)).replace('-', '−')
+
+    private fun hasOperation(expr: String) =
+        expr.any { it in OPERATORS || it == '%' || it == '(' }
+
     /** Выражение с отброшенными висящими операторами и закрытыми скобками. */
     private fun completed(): String {
         var e = expression
-        while (e.isNotEmpty() && (e.last() in OPERATORS || e.last() == '(' || e.last() == '.')) {
+        while (e.isNotEmpty() && (e.last() in OPERATORS || e.last() in "(.E")) {
             e = e.dropLast(1)
         }
         var open = 0
@@ -162,12 +196,14 @@ class Calculator {
         return e + ")".repeat(open.coerceAtLeast(0))
     }
 
+    /** Число в конце выражения, включая экспоненту: «12.5», «1E−20». */
     private fun currentNumber(): String =
-        expression.takeLastWhile { it.isDigit() || it == '.' }
+        NUMBER_AT_END.find(expression)?.value ?: ""
 
     private fun openParens(): Int = expression.count { it == '(' } - expression.count { it == ')' }
 
     companion object {
         val OPERATORS = setOf('+', '−', '×', '÷')
+        private val NUMBER_AT_END = Regex("[0-9.]+(E−?[0-9]*)?$")
     }
 }
