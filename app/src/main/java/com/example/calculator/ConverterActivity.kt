@@ -318,7 +318,7 @@ class ConverterActivity : Activity() {
         // Выгодно: сдать — по самой высокой покупке, купить — по самой низкой продаже.
         val bestBuy = buyExt?.max?.value
         val bestSell = sellExt?.min?.value
-        val best = getColor(R.color.best)
+        val bestColor = getColor(R.color.best)
         val primary = getColor(R.color.text_primary)
         for (bank in br.banks) {
             val q = bank.quotes[c] ?: continue
@@ -328,7 +328,7 @@ class ConverterActivity : Activity() {
                 val tv = row.findViewById<TextView>(id)
                 tv.text = value?.let(Money::formatBankRate) ?: "—"
                 val isBest = value != null && best != null && value.compareTo(best) == 0
-                tv.setTextColor(if (isBest) best else primary)
+                tv.setTextColor(if (isBest) bestColor else primary)
                 tv.setTypeface(null, if (isBest) Typeface.BOLD else Typeface.NORMAL)
             }
             cell(R.id.bankBuy, q.buy, bestBuy)
