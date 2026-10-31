@@ -200,7 +200,7 @@ class MainActivity : ThemedActivity() {
 
         findViewById<View>(R.id.btnInfo).setOnClickListener {
             it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-            startActivity(Intent(this, AboutActivity::class.java))
+            showMainMenu(it)
         }
 
         converterButton.setOnClickListener {
@@ -396,7 +396,63 @@ class MainActivity : ThemedActivity() {
             .hideSoftInputFromWindow(searchInput.windowToken, 0)
     }
 
+    /** Меню ⋮: калькулятор поверх окон, оформление, инструкция. */
+    private fun showMainMenu(anchor: View) {
+        PopupMenu(this, anchor, Gravity.END).apply {
+            menu.add(0, 1, 0, if (FloatingCalculatorService.running) R.string.menu_floating_off else R.string.menu_floating_on)
+            menu.add(0, 2, 1, R.string.menu_appearance)
+            menu.add(0, 3, 2, R.string.menu_about)
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    1 -> toggleFloating()
+                    2 -> ThemeManager.showPicker(this@MainActivity)
+                    3 -> startActivity(Intent(this@MainActivity, AboutActivity::class.java))
+                }
+                true
+            }
+            show()
+        }
+    }
+
+    private var floatingPermissionAsked = false
+
+    private fun toggleFloating() {
+        if (FloatingCalculatorService.running) {
+            FloatingCalculatorService.stop(this)
+            return
+        }
+        if (FloatingCalculatorService.start(this)) {
+            Toast.makeText(this, R.string.floating_started, Toast.LENGTH_LONG).show()
+            return
+        }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.floating_permission_title)
+            .setMessage(R.string.floating_permission_message)
+            .setPositiveButton(R.string.floating_permission_go) { _, _ ->
+                floatingPermissionAsked = true
+                startActivity(FloatingCalculatorService.permissionIntent(this))
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Плавающее окно могло добавить записи в историю.
+        history.replaceAll(historyStore.load())
+        listAdapter.notifyDataSetChanged()
+        applyHistoryMode()
+        // Вернулись из настроек с разрешением — сразу открываем окно.
+        if (floatingPermissionAsked) {
+            floatingPermissionAsked = false
+            if (FloatingCalculatorService.start(this)) {
+                Toast.makeText(this, R.string.floating_started, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
     private fun addToHistory(entry: HistoryEntry) {
+        history.replaceAll(historyStore.load())
         if (history.add(entry)) {
             onHistoryChanged()
             historyList.post { historyList.setSelection(history.size - 1) }

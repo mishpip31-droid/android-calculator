@@ -134,4 +134,25 @@
     <string name="quick_sum_edit">Строка ленты</string>
     <string name="quick_sum_label_hint">Подпись (необязательно)</string>
     <string name="quick_sum_amount_hint">Число или выражение</string>
+    <string name="floating_tile">Калькулятор поверх окон</string>
+    <string name="floating_channel">Плавающий калькулятор</string>
+    <string name="floating_notification_title">Калькулятор поверх окон</string>
+    <string name="floating_notification_text">Нажмите, чтобы развернуть окно</string>
+    <string name="floating_minimize">Свернуть в пузырёк</string>
+    <string name="floating_open_app">Открыть приложение</string>
+    <string name="floating_close">Закрыть</string>
+    <string name="floating_expand">Развернуть калькулятор</string>
+    <string name="floating_paste">📋 Вставить</string>
+    <string name="floating_paste_empty">В буфере нет числа</string>
+    <string name="floating_copied">Скопировано: %1$s</string>
+    <string name="floating_permission_toast">Разрешите «Поверх других приложений» для Калькулятора и нажмите ещё раз</string>
+    <string name="floating_permission_title">Калькулятор поверх окон</string>
+    <string name="floating_permission_message">Чтобы окно калькулятора было поверх других приложений, Android попросит разрешение «Поверх других приложений».\n\nНа следующем экране включите его для «Калькулятора» и вернитесь назад.</string>
+    <string name="floating_permission_go">Открыть настройки</string>
+    <string name="floating_started">Окно появится поверх других приложений. Сверните приложение — калькулятор останется.</string>
+    <string name="menu_floating_on">🪟 Калькулятор поверх окон</string>
+    <string name="menu_floating_off">🪟 Закрыть калькулятор поверх окон</string>
+    <string name="menu_appearance">🎨 Оформление</string>
+    <string name="menu_about">ⓘ Инструкция и о приложении</string>
+    <string name="desc_menu">Меню</string>
 </resources>

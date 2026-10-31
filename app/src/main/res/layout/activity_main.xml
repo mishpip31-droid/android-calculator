@@ -125,8 +125,8 @@
             android:layout_width="40dp"
             android:layout_height="48dp"
             android:background="@drawable/icon_button_bg"
-            android:contentDescription="@string/desc_info"
-            android:src="@drawable/ic_info" />
+            android:contentDescription="@string/desc_menu"
+            android:src="@drawable/ic_more" />
 
         <ImageButton
             android:id="@+id/btnClearHistory"

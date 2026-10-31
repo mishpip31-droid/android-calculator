@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/floating_window_bg"
+    android:elevation="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="10dp">
+
+        <!-- Полоска для перетаскивания и кнопки окна -->
+        <FrameLayout
+            android:id="@+id/fHandle"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <View
+                android:layout_width="32dp"
+                android:layout_height="4dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/floating_handle_bg" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="4dp"
+                android:text="@string/app_name"
+                android:textColor="?attr/c_text_secondary"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/fMinimize"
+                    style="@style/FloatSmallButton"
+                    android:contentDescription="@string/floating_minimize"
+                    android:text="—" />
+
+                <TextView
+                    android:id="@+id/fOpenApp"
+                    style="@style/FloatSmallButton"
+                    android:contentDescription="@string/floating_open_app"
+                    android:text="⤢" />
+
+                <TextView
+                    android:id="@+id/fClose"
+                    style="@style/FloatSmallButton"
+                    android:contentDescription="@string/floating_close"
+                    android:text="✕" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Экран -->
+        <TextView
+            android:id="@+id/fExpression"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
+            android:ellipsize="start"
+            android:gravity="end"
+            android:maxLines="1"
+            android:minHeight="20dp"
+            android:textColor="?attr/c_text_secondary"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/fResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
+            android:ellipsize="start"
+            android:gravity="end"
+            android:maxLines="1"
+            android:textColor="?attr/c_text_primary"
+            android:textSize="30sp" />
+
+        <!-- Пересчёт по курсу и вставка из буфера -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
+
+            <TextView
+                android:id="@+id/fUsd"
+                style="@style/FloatChip" />
+
+            <TextView
+                android:id="@+id/fEur"
+                style="@style/FloatChip" />
+
+            <TextView
+                android:id="@+id/fPaste"
+                style="@style/FloatChip"
+                android:text="@string/floating_paste"
+                android:textColor="?attr/c_best" />
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/FloatKeyRow">
+            <TextView
+                android:id="@+id/fC"
+                style="@style/FloatKey.Func"
+                android:text="C" />
+            <TextView
+                android:id="@+id/fParen"
+                style="@style/FloatKey.Func"
+                android:text="( )" />
+            <TextView
+                android:id="@+id/fPercent"
+                style="@style/FloatKey.Func"
+                android:text="%" />
+            <TextView
+                android:id="@+id/fDiv"
+                style="@style/FloatKey.Op"
+                android:text="÷" />
+        </LinearLayout>
+        <LinearLayout
+            style="@style/FloatKeyRow">
+            <TextView
+                android:id="@+id/f7"
+                style="@style/FloatKey.Digit"
+                android:text="7" />
+            <TextView
+                android:id="@+id/f8"
+                style="@style/FloatKey.Digit"
+                android:text="8" />
+            <TextView
+                android:id="@+id/f9"
+                style="@style/FloatKey.Digit"
+                android:text="9" />
+            <TextView
+                android:id="@+id/fMul"
+                style="@style/FloatKey.Op"
+                android:text="×" />
+        </LinearLayout>
+        <LinearLayout
+            style="@style/FloatKeyRow">
+            <TextView
+                android:id="@+id/f4"
+                style="@style/FloatKey.Digit"
+                android:text="4" />
+            <TextView
+                android:id="@+id/f5"
+                style="@style/FloatKey.Digit"
+                android:text="5" />
+            <TextView
+                android:id="@+id/f6"
+                style="@style/FloatKey.Digit"
+                android:text="6" />
+            <TextView
+                android:id="@+id/fMinus"
+                style="@style/FloatKey.Op"
+                android:text="−" />
+        </LinearLayout>
+        <LinearLayout
+            style="@style/FloatKeyRow">
+            <TextView
+                android:id="@+id/f1"
+                style="@style/FloatKey.Digit"
+                android:text="1" />
+            <TextView
+                android:id="@+id/f2"
+                style="@style/FloatKey.Digit"
+                android:text="2" />
+            <TextView
+                android:id="@+id/f3"
+                style="@style/FloatKey.Digit"
+                android:text="3" />
+            <TextView
+                android:id="@+id/fPlus"
+                style="@style/FloatKey.Op"
+                android:text="+" />
+        </LinearLayout>
+        <LinearLayout
+            style="@style/FloatKeyRow">
+            <TextView
+                android:id="@+id/fBack"
+                style="@style/FloatKey.Func"
+                android:text="⌫" />
+            <TextView
+                android:id="@+id/f0"
+                style="@style/FloatKey.Digit"
+                android:text="0" />
+            <TextView
+                android:id="@+id/fDot"
+                style="@style/FloatKey.Digit"
+                android:text="." />
+            <TextView
+                android:id="@+id/fEq"
+                style="@style/FloatKey.Equals"
+                android:text="=" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Уголок изменения размера -->
+    <View
+        android:id="@+id/fResize"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_gravity="bottom|end"
+        android:background="@drawable/floating_resize" />
+</FrameLayout>

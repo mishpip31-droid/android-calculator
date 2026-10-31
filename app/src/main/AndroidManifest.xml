@@ -4,6 +4,11 @@
     <!-- Загрузка курсов валют -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Калькулятор поверх других приложений -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -41,5 +46,32 @@
             android:name=".QuickSumActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize|stateVisible" />
+        <activity
+            android:name=".FloatingLauncherActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <service
+            android:name=".FloatingCalculatorService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Floating calculator window shown over other apps at the user's request" />
+        </service>
+
+        <service
+            android:name=".FloatingTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_tile_calculator"
+            android:label="@string/floating_tile"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>

@@ -77,6 +77,87 @@
         <item name="android:textSize">15sp</item>
     </style>
 
+    <!-- Плавающий калькулятор -->
+    <style name="FloatKeyRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">42dp</item>
+        <item name="android:layout_marginStart">7dp</item>
+        <item name="android:layout_marginEnd">7dp</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="FloatKey">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">?attr/c_text_primary</item>
+        <item name="android:background">@drawable/fkey_digit</item>
+    </style>
+
+    <style name="FloatKey.Digit" />
+
+    <style name="FloatKey.Func">
+        <item name="android:background">@drawable/fkey_func</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="FloatKey.Op">
+        <item name="android:background">@drawable/fkey_op</item>
+        <item name="android:textColor">?attr/c_btn_op_text</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="FloatKey.Equals">
+        <item name="android:background">@drawable/fkey_equals</item>
+        <item name="android:textColor">?attr/c_btn_equals_text</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="FloatSmallButton">
+        <item name="android:layout_width">28dp</item>
+        <item name="android:layout_height">28dp</item>
+        <item name="android:layout_marginStart">6dp</item>
+        <item name="android:background">@drawable/floating_small_btn_bg</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:textColor">?attr/c_text_primary</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="FloatChip">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">26dp</item>
+        <item name="android:layout_marginEnd">6dp</item>
+        <item name="android:background">@drawable/floating_chip_bg</item>
+        <item name="android:gravity">center</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingStart">9dp</item>
+        <item name="android:paddingEnd">9dp</item>
+        <item name="android:textColor">?attr/c_btn_op_text</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="FloatPeek">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/floating_peek_bg</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
     <style name="CalcRow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0dp</item>
