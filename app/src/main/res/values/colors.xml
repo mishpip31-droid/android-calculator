@@ -1,0 +1,14 @@
+<resources>
+    <color name="background">#FFF7F7FA</color>
+    <color name="text_primary">#FF1B1B1F</color>
+    <color name="text_secondary">#FF6B6B74</color>
+    <color name="error">#FFD32F2F</color>
+    <color name="btn_digit">#FFFFFFFF</color>
+    <color name="btn_func">#FFE3E3EA</color>
+    <color name="btn_op">#FFDCE6FF</color>
+    <color name="btn_op_text">#FF2F5BD3</color>
+    <color name="btn_equals">#FF2F5BD3</color>
+    <color name="btn_equals_text">#FFFFFFFF</color>
+    <color name="ripple">#33000000</color>
+    <color name="icon_bg">#FF2F5BD3</color>
+</resources>

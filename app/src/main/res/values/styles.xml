@@ -1,0 +1,48 @@
+<resources>
+    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="CalcButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:background">@drawable/btn_digit</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+    </style>
+
+    <style name="CalcButton.Func">
+        <item name="android:background">@drawable/btn_func</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="CalcButton.Op">
+        <item name="android:background">@drawable/btn_op</item>
+        <item name="android:textColor">@color/btn_op_text</item>
+        <item name="android:textSize">32sp</item>
+    </style>
+
+    <style name="CalcButton.Equals">
+        <item name="android:background">@drawable/btn_equals</item>
+        <item name="android:textColor">@color/btn_equals_text</item>
+        <item name="android:textSize">32sp</item>
+    </style>
+
+    <style name="CalcRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+</resources>
