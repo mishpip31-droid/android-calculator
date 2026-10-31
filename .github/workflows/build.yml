@@ -21,6 +21,16 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      - name: Check rate APIs (info only)
+        continue-on-error: true
+        run: |
+          for u in "https://api.nbrb.by/exrates/rates/USD?parammode=2" \
+                   "https://api.nbrb.by/exrates/rates/EUR?parammode=2" \
+                   "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd" \
+                   "https://api.coinbase.com/v2/prices/BTC-USD/spot"; do
+            echo "== $u"; curl -sS -m 15 "$u" | head -c 400; echo
+          done
+
       - name: Unit tests
         run: ./gradlew --no-daemon testDebugUnitTest
 

@@ -1,10 +1,11 @@
 package com.example.calculator
 
-/** Одна запись истории: выражение и его результат. */
+/** Одна запись истории: выражение, результат и необязательная заметка. */
 data class HistoryEntry(
     val expression: String,
     val result: String,
     val timestamp: Long = System.currentTimeMillis(),
+    val note: String = "",
 )
 
 /**
@@ -29,6 +30,16 @@ class History(private val maxSize: Int = 200) {
     }
 
     fun removeAt(index: Int): HistoryEntry = items.removeAt(index)
+
+    /** Индекс именно этого объекта записи (а не равной ему). */
+    fun indexOf(entry: HistoryEntry): Int = items.indexOfFirst { it === entry }
+
+    /** Задаёт заметку; пустая строка убирает её. Возвращает обновлённую запись. */
+    fun setNote(index: Int, note: String): HistoryEntry {
+        val updated = items[index].copy(note = note.trim())
+        items[index] = updated
+        return updated
+    }
 
     fun clear() = items.clear()
 

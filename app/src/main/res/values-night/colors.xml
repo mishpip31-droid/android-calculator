@@ -10,4 +10,6 @@
     <color name="btn_equals">#FF7FA2FF</color>
     <color name="btn_equals_text">#FF0B1330</color>
     <color name="ripple">#33FFFFFF</color>
+    <color name="accent">#FFA9C1FF</color>
+    <color name="card">#FF1E1E22</color>
 </resources>

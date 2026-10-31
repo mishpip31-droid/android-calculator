@@ -5,20 +5,56 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
-/** Показывает записи истории: выражение мелко, результат крупно. */
-class HistoryAdapter(private val history: History) : BaseAdapter() {
+/**
+ * Показывает записи истории.
+ * Лента (под выражением) идёт от старых к новым, плитки — от новых к старым.
+ */
+class HistoryAdapter(
+    private val history: History,
+    private val layout: Int,
+    private val newestFirst: Boolean,
+) : BaseAdapter() {
     override fun getCount() = history.size
-    override fun getItem(position: Int): HistoryEntry = history.entries[position]
-    override fun getItemId(position: Int) = getItem(position).timestamp
-    override fun hasStableIds() = false
+
+    override fun getItem(position: Int): HistoryEntry =
+        history.entries[if (newestFirst) history.size - 1 - position else position]
+
+    override fun getItemId(position: Int) = position.toLong()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = convertView ?: LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_history, parent, false)
+        val view = convertView ?: LayoutInflater.from(parent.context).inflate(layout, parent, false)
         val entry = getItem(position)
         view.findViewById<TextView>(R.id.historyExpression).text = entry.expression
         view.findViewById<TextView>(R.id.historyResult).text = "= ${entry.result}"
+        view.findViewById<TextView>(R.id.historyNote).apply {
+            text = entry.note
+            visibility = if (entry.note.isEmpty()) View.GONE else View.VISIBLE
+        }
+        view.findViewById<TextView?>(R.id.historyTime)?.text = formatTime(entry.timestamp)
         return view
+    }
+
+    private fun formatTime(timestamp: Long): String {
+        if (timestamp <= 0) return ""
+        val then = Calendar.getInstance().apply { timeInMillis = timestamp }
+        val now = Calendar.getInstance()
+        val sameYear = then.get(Calendar.YEAR) == now.get(Calendar.YEAR)
+        val dayDiff = if (sameYear) now.get(Calendar.DAY_OF_YEAR) - then.get(Calendar.DAY_OF_YEAR) else -1
+        val time = SimpleDateFormat("HH:mm", RU).format(Date(timestamp))
+        return when {
+            dayDiff == 0 -> "Сегодня, $time"
+            dayDiff == 1 -> "Вчера, $time"
+            sameYear -> SimpleDateFormat("d MMM, HH:mm", RU).format(Date(timestamp))
+            else -> SimpleDateFormat("d MMM yyyy", RU).format(Date(timestamp))
+        }
+    }
+
+    private companion object {
+        val RU: Locale = Locale.forLanguageTag("ru")
     }
 }

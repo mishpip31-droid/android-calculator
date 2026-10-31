@@ -4,11 +4,17 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.View
+import android.view.WindowManager
+import android.widget.AdapterView
+import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.GridView
 import android.widget.HorizontalScrollView
 import android.widget.ImageButton
 import android.widget.ListView
@@ -20,12 +26,14 @@ class MainActivity : Activity() {
     private val calculator = Calculator()
     private val history = History()
     private lateinit var historyStore: HistoryStore
-    private lateinit var historyAdapter: HistoryAdapter
+    private lateinit var listAdapter: HistoryAdapter
+    private lateinit var tileAdapter: HistoryAdapter
 
     private lateinit var expressionView: TextView
     private lateinit var resultView: TextView
     private lateinit var scroll: HorizontalScrollView
     private lateinit var historyList: ListView
+    private lateinit var historyGrid: GridView
     private lateinit var historyEmpty: TextView
     private lateinit var historyHint: TextView
     private lateinit var keypad: View
@@ -43,6 +51,7 @@ class MainActivity : Activity() {
         resultView = findViewById(R.id.result)
         scroll = findViewById(R.id.expressionScroll)
         historyList = findViewById(R.id.historyList)
+        historyGrid = findViewById(R.id.historyGrid)
         historyEmpty = findViewById(R.id.historyEmpty)
         historyHint = findViewById(R.id.historyHint)
         keypad = findViewById(R.id.keypad)
@@ -51,8 +60,11 @@ class MainActivity : Activity() {
 
         historyStore = HistoryStore(this)
         history.replaceAll(historyStore.load())
-        historyAdapter = HistoryAdapter(history)
-        historyList.adapter = historyAdapter
+        // Лента под выражением: новые снизу. Плитки на весь экран: новые сверху.
+        listAdapter = HistoryAdapter(history, R.layout.item_history, newestFirst = false)
+        tileAdapter = HistoryAdapter(history, R.layout.item_history_tile, newestFirst = true)
+        historyList.adapter = listAdapter
+        historyGrid.adapter = tileAdapter
 
         savedInstanceState?.let {
             calculator.restore(
@@ -118,35 +130,47 @@ class MainActivity : Activity() {
         }
         clearHistory.setOnClickListener { confirmClearHistory() }
 
-        // Нажатие — вставить результат в текущее выражение.
-        historyList.setOnItemClickListener { _, view, position, _ ->
-            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-            calculator.insertNumber(history.entries[position].result)
-            if (historyExpanded) setHistoryExpanded(false)
-            render()
+        findViewById<View>(R.id.btnConverter).setOnClickListener {
+            it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            openConverter()
         }
-        // Удержание — меню с остальными действиями.
-        historyList.setOnItemLongClickListener { _, view, position, _ ->
-            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-            showEntryMenu(view, position)
-            true
+
+        for (view in listOf<AdapterView<*>>(historyList, historyGrid)) {
+            // Нажатие — вставить результат в текущее выражение.
+            view.setOnItemClickListener { parent, item, position, _ ->
+                item.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                val entry = parent.getItemAtPosition(position) as HistoryEntry
+                insertFromHistory { calculator.insertNumber(entry.result) }
+            }
+            // Удержание — меню с остальными действиями.
+            view.setOnItemLongClickListener { parent, item, position, _ ->
+                item.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                showEntryMenu(item, parent.getItemAtPosition(position) as HistoryEntry)
+                true
+            }
         }
     }
 
-    private fun showEntryMenu(anchor: View, position: Int) {
-        val entry = history.entries.getOrNull(position) ?: return
+    private fun showEntryMenu(anchor: View, entry: HistoryEntry) {
         PopupMenu(this, anchor, Gravity.END).apply {
             menu.add(0, MENU_RESULT, 0, R.string.menu_insert_result)
             menu.add(0, MENU_EXPRESSION, 1, R.string.menu_insert_expression)
-            menu.add(0, MENU_COPY, 2, R.string.menu_copy)
-            menu.add(0, MENU_DELETE, 3, R.string.menu_delete)
+            menu.add(0, MENU_NOTE, 2, if (entry.note.isEmpty()) R.string.menu_note_add else R.string.menu_note_edit)
+            menu.add(0, MENU_COPY, 3, R.string.menu_copy)
+            menu.add(0, MENU_DELETE, 4, R.string.menu_delete)
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     MENU_RESULT -> insertFromHistory { calculator.insertNumber(entry.result) }
                     MENU_EXPRESSION -> insertFromHistory { calculator.insertExpression(entry.expression) }
-                    MENU_COPY -> copyToClipboard("${entry.expression} = ${entry.result}")
+                    MENU_NOTE -> editNote(entry)
+                    MENU_COPY -> copyToClipboard(
+                        buildString {
+                            if (entry.note.isNotEmpty()) append(entry.note).append(": ")
+                            append(entry.expression).append(" = ").append(entry.result)
+                        },
+                    )
                     MENU_DELETE -> {
-                        val index = history.entries.indexOf(entry)
+                        val index = history.indexOf(entry)
                         if (index >= 0) {
                             history.removeAt(index)
                             onHistoryChanged()
@@ -157,6 +181,66 @@ class MainActivity : Activity() {
             }
             show()
         }
+    }
+
+    private fun editNote(entry: HistoryEntry) {
+        val input = EditText(this).apply {
+            setText(entry.note)
+            setSelection(text.length)
+            hint = getString(R.string.note_hint)
+            setSingleLine(true)
+            inputType = android.text.InputType.TYPE_CLASS_TEXT or
+                android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+        }
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        val container = FrameLayout(this).apply {
+            setPadding(pad, pad / 2, pad, 0)
+            addView(input)
+        }
+        fun save(note: String) {
+            val index = history.indexOf(entry)
+            if (index >= 0) {
+                history.setNote(index, note)
+                onHistoryChanged()
+            }
+        }
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.note_title)
+            .setMessage("${entry.expression} = ${entry.result}")
+            .setView(container)
+            .setPositiveButton(R.string.save) { _, _ -> save(input.text.toString()) }
+            .setNegativeButton(R.string.cancel, null)
+            .apply {
+                if (entry.note.isNotEmpty()) setNeutralButton(R.string.note_remove) { _, _ -> save("") }
+            }
+            .create()
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+        input.setOnEditorActionListener { _, _, _ ->
+            save(input.text.toString())
+            dialog.dismiss()
+            true
+        }
+        dialog.show()
+        input.requestFocus()
+    }
+
+    private fun openConverter() {
+        val intent = Intent(this, ConverterActivity::class.java)
+        calculator.currentValue()?.let {
+            intent.putExtra(ConverterActivity.EXTRA_VALUE, it.replace('−', '-'))
+        }
+        @Suppress("DEPRECATION")
+        startActivityForResult(intent, REQUEST_CONVERTER)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        @Suppress("DEPRECATION")
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode != REQUEST_CONVERTER || resultCode != RESULT_OK) return
+        val value = data?.getStringExtra(ConverterActivity.EXTRA_VALUE) ?: return
+        calculator.insertNumber(value.replace('-', '−'))
+        render()
     }
 
     private fun insertFromHistory(action: () -> Unit) {
@@ -195,23 +279,26 @@ class MainActivity : Activity() {
 
     private fun onHistoryChanged() {
         historyStore.save(history.entries)
-        historyAdapter.notifyDataSetChanged()
+        listAdapter.notifyDataSetChanged()
+        tileAdapter.notifyDataSetChanged()
         applyHistoryMode()
     }
 
     private fun setHistoryExpanded(expanded: Boolean) {
         historyExpanded = expanded
         applyHistoryMode()
-        if (expanded) historyList.post { historyList.setSelection(history.size - 1) }
+        if (expanded) historyGrid.setSelection(0) else historyList.post { historyList.setSelection(history.size - 1) }
     }
 
     private fun applyHistoryMode() {
         keypad.visibility = if (historyExpanded) View.GONE else View.VISIBLE
         val empty = history.isEmpty()
+        historyList.visibility = if (historyExpanded) View.GONE else View.VISIBLE
+        historyGrid.visibility = if (historyExpanded && !empty) View.VISIBLE else View.GONE
         // В свёрнутом виде пустую ленту просто не показываем, в развёрнутом — подсказка.
         historyEmpty.visibility = if (historyExpanded && empty) View.VISIBLE else View.GONE
         historyHint.visibility = if (historyExpanded && !empty) View.VISIBLE else View.INVISIBLE
-        clearHistory.visibility = if (historyExpanded && !empty) View.VISIBLE else View.INVISIBLE
+        clearHistory.visibility = if (historyExpanded && !empty) View.VISIBLE else View.GONE
         toggleHistory.setImageResource(if (historyExpanded) R.drawable.ic_keypad else R.drawable.ic_history)
         toggleHistory.contentDescription = getString(
             if (historyExpanded) R.string.desc_keypad else R.string.desc_history,
@@ -248,5 +335,8 @@ class MainActivity : Activity() {
         const val MENU_EXPRESSION = 2
         const val MENU_COPY = 3
         const val MENU_DELETE = 4
+        const val MENU_NOTE = 5
+
+        const val REQUEST_CONVERTER = 1
     }
 }

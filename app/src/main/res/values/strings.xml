@@ -17,4 +17,24 @@
     <string name="clear_history_message">Все сохранённые вычисления будут удалены.</string>
     <string name="clear">Очистить</string>
     <string name="cancel">Отмена</string>
+    <string name="menu_note_add">Добавить заметку</string>
+    <string name="menu_note_edit">Изменить заметку</string>
+    <string name="note_title">Заметка</string>
+    <string name="note_hint">Например: аренда, продукты</string>
+    <string name="save">Сохранить</string>
+    <string name="note_remove">Убрать</string>
+    <string name="converter">Валюты</string>
+    <string name="desc_converter">Конвертер валют</string>
+    <string name="converter_title">Конвертер валют</string>
+    <string name="desc_back">Назад</string>
+    <string name="desc_refresh">Обновить курсы</string>
+    <string name="to_calculator">В калькулятор</string>
+    <string name="rates_loading">Загружаю курсы…</string>
+    <string name="rates_nbrb">Курс НБРБ на %1$s</string>
+    <string name="rates_updated">Обновлено %1$s</string>
+    <string name="rates_offline">нет связи</string>
+    <string name="rates_offline_toast">Нет связи — показаны сохранённые курсы</string>
+    <string name="rates_no_connection_empty">Нет связи. Подключитесь к интернету и нажмите «Обновить», чтобы загрузить курсы.</string>
+    <string name="rate_unknown">курс не загружен</string>
+    <string name="converter_hint">Введите сумму в любой строке — остальные пересчитаются. Можно писать выражения: 100+50</string>
 </resources>

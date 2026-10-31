@@ -132,6 +132,18 @@ class Calculator {
         }
     }
 
+    /** Текущее значение (результат или вычисленное выражение) или null, если вычислить нельзя. */
+    fun currentValue(): String? {
+        if (error != null) return null
+        val expr = completed()
+        if (expr.isEmpty()) return null
+        return try {
+            displayResult(expr)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     /**
      * Вставляет число (например, результат из истории).
      * Если пользователь как раз набирает число, оно заменяется вставленным.

@@ -122,3 +122,29 @@ class HistoryTest {
         assertEquals("−2", c.preview())
     }
 }
+
+class HistoryNoteTest {
+    @Test fun setAndClearNote() {
+        val h = History()
+        h.add(HistoryEntry("4500×3", "13500", 1))
+        val updated = h.setNote(0, "  аренда ")
+        assertEquals("аренда", updated.note)
+        assertEquals(0, h.indexOf(updated))
+        assertEquals("", h.setNote(0, "").note)
+    }
+
+    @Test fun indexOfUsesIdentity() {
+        val h = History()
+        val a = HistoryEntry("1+1", "2", 5)
+        h.add(a)
+        assertEquals(-1, h.indexOf(a.copy()))
+        assertEquals(0, h.indexOf(a))
+    }
+
+    @Test fun currentValue() {
+        val c = Calculator()
+        assertNull(c.currentValue())
+        c.inputDigit('2'); c.inputOperator('×'); c.inputDigit('3'); c.inputOperator('+')
+        assertEquals("6", c.currentValue())
+    }
+}
