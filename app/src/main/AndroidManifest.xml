@@ -30,5 +30,12 @@
         <activity
             android:name=".PrivacyActivity"
             android:exported="false" />
+        <activity
+            android:name=".ShoppingListsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ShoppingListActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
     </application>
 </manifest>

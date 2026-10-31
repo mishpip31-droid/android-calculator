@@ -161,6 +161,42 @@
 
             <TextView
                 style="@style/AboutHeading"
+                android:text="Покупки" />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Кнопка «Покупки» на главном экране. «+ Новый список» — создайте список, например «Продукты»." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Впишите товар внизу и нажмите «Готово» — он добавится, а клавиатура останется для следующего товара. Подсказки появляются из того, что вы уже покупали." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Можно сразу с количеством и ценой: «Молоко 2 × 2.35», «Яблоки 1.5 кг × 3.20» или «Картошка 3 кг»." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Нажмите на товар — он вычеркнется и уйдёт вниз в «Куплено». Нажмите ещё раз — вернётся." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Смахните товар влево или вправо — удалится; внизу появится «Отменить»." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Удерживайте товар — изменить название, количество и цену." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Если указаны цены, внизу видно итог, сколько потрачено и сколько осталось. «В калькулятор» вставит итог в пример." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• ⋮ — снять все отметки (для повторного списка), удалить купленное, переименовать. Кнопка «Поделиться» отправит список текстом в мессенджер." />
+
+            <TextView
+                style="@style/AboutHeading"
                 android:text="Конвертер валют" />
 
             <TextView

@@ -15,4 +15,8 @@
     <color name="best">#FF2E7D32</color>
     <color name="divider">#1F000000</color>
     <color name="ic_launcher_background">#FF03161D</color>
+    <color name="undo_bg">#FF2B2B30</color>
+    <color name="undo_text">#FFF2F2F5</color>
+    <color name="undo_action">#FF8AB4FF</color>
+    <color name="danger">#FFE53935</color>
 </resources>

@@ -48,6 +48,8 @@ android {
 }
 
 dependencies {
+    // Список товаров со свайпом для удаления (ItemTouchHelper).
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
     testImplementation("junit:junit:4.13.2")
     // В юнит-тестах на JVM нет android.jar с org.json — подключаем настоящую библиотеку.
     testImplementation("org.json:json:20240303")

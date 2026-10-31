@@ -14,4 +14,8 @@
     <color name="card">#FF1E1E22</color>
     <color name="best">#FF81C784</color>
     <color name="divider">#33FFFFFF</color>
+    <color name="undo_bg">#FFE6E6EA</color>
+    <color name="undo_text">#FF1B1B1F</color>
+    <color name="undo_action">#FF2F5BD3</color>
+    <color name="danger">#FFEF5350</color>
 </resources>

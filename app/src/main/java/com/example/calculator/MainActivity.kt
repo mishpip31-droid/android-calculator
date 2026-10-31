@@ -91,6 +91,21 @@ class MainActivity : Activity() {
         applyHistoryMode()
         render()
         historyList.setSelection(history.size - 1)
+        if (savedInstanceState == null) handleInsert(intent)
+    }
+
+    /** Возврат из списка покупок: «В калькулятор» вставляет итог в выражение. */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleInsert(intent)
+    }
+
+    private fun handleInsert(intent: Intent?) {
+        val value = intent?.getStringExtra(EXTRA_INSERT_NUMBER) ?: return
+        intent.removeExtra(EXTRA_INSERT_NUMBER)
+        if (historyExpanded) setHistoryExpanded(false)
+        calculator.insertNumber(value.replace('-', '−'))
+        render()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -163,6 +178,11 @@ class MainActivity : Activity() {
             }
             override fun onScroll(view: android.widget.AbsListView, first: Int, visible: Int, total: Int) {}
         })
+
+        findViewById<View>(R.id.btnShopping).setOnClickListener {
+            it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            startActivity(Intent(this, ShoppingListsActivity::class.java))
+        }
 
         findViewById<View>(R.id.btnInfo).setOnClickListener {
             it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
@@ -392,6 +412,7 @@ class MainActivity : Activity() {
         searchBar.visibility = if (historyExpanded && !empty) View.VISIBLE else View.INVISIBLE
         converterButton.visibility = if (historyExpanded) View.GONE else View.VISIBLE
         findViewById<View>(R.id.btnInfo).visibility = if (historyExpanded) View.GONE else View.VISIBLE
+        findViewById<View>(R.id.btnShopping).visibility = if (historyExpanded) View.GONE else View.VISIBLE
         refreshTiles()
         clearHistory.visibility = if (historyExpanded && !empty) View.VISIBLE else View.GONE
         toggleHistory.setImageResource(if (historyExpanded) R.drawable.ic_keypad else R.drawable.ic_history)
