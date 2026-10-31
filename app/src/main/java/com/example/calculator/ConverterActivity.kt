@@ -201,7 +201,7 @@ class ConverterActivity : Activity() {
             labels += getString(R.string.source_best)
             for (b in banks) {
                 ids += b.id
-                labels += "${b.name}  ·  ${quoteText(b, Currency.USD)}"
+                labels += b.name
             }
         }
         AlertDialog.Builder(this)
@@ -227,12 +227,6 @@ class ConverterActivity : Activity() {
     private fun setTableCurrency(c: Currency) {
         tableCurrency = c
         renderBankTable()
-    }
-
-    /** «USD 2.935 / 2.975» — покупка / продажа. */
-    private fun quoteText(bank: Bank, c: Currency): String {
-        val q = bank.quotes[c] ?: return "${c.name} —"
-        return "${c.name} ${q.buy?.let(Money::formatBankRate) ?: "—"} / ${q.sell?.let(Money::formatBankRate) ?: "—"}"
     }
 
     // ---------- Отрисовка ----------
@@ -317,13 +311,14 @@ class ConverterActivity : Activity() {
         val c = tableCurrency
         val buyExt = br.extremes(c, Side.BUY)
         val sellExt = br.extremes(c, Side.SELL)
-        buyRange.text = rangeText(R.string.range_buy, buyExt)
-        sellRange.text = rangeText(R.string.range_sell, sellExt)
+        // Выгодно сдать — по максимальной покупке, купить — по минимальной продаже.
+        buyRange.text = rangeText(R.string.range_buy, buyExt, bestIsMax = true)
+        sellRange.text = rangeText(R.string.range_sell, sellExt, bestIsMax = false)
 
         // Выгодно: сдать — по самой высокой покупке, купить — по самой низкой продаже.
         val bestBuy = buyExt?.max?.value
         val bestSell = sellExt?.min?.value
-        val accent = getColor(R.color.accent)
+        val best = getColor(R.color.best)
         val primary = getColor(R.color.text_primary)
         for (bank in br.banks) {
             val q = bank.quotes[c] ?: continue
@@ -333,7 +328,7 @@ class ConverterActivity : Activity() {
                 val tv = row.findViewById<TextView>(id)
                 tv.text = value?.let(Money::formatBankRate) ?: "—"
                 val isBest = value != null && best != null && value.compareTo(best) == 0
-                tv.setTextColor(if (isBest) accent else primary)
+                tv.setTextColor(if (isBest) best else primary)
                 tv.setTypeface(null, if (isBest) Typeface.BOLD else Typeface.NORMAL)
             }
             cell(R.id.bankBuy, q.buy, bestBuy)
@@ -348,14 +343,30 @@ class ConverterActivity : Activity() {
         }
     }
 
-    private fun rangeText(labelRes: Int, ext: Extremes?): String {
-        if (ext == null) return "${getString(labelRes)}: —"
-        return getString(
-            R.string.range_line,
-            getString(labelRes),
-            Money.formatBankRate(ext.min.value), bankNames(ext.min.banks),
-            Money.formatBankRate(ext.max.value), bankNames(ext.max.banks),
-        )
+    /** «Покупка: мин 2.92 (ТК Банк) · макс 2.942 (Белинвестбанк)» — лучшая часть зелёным. */
+    private fun rangeText(labelRes: Int, ext: Extremes?, bestIsMax: Boolean): CharSequence {
+        val label = getString(labelRes)
+        if (ext == null) return "$label: —"
+        val out = android.text.SpannableStringBuilder("$label: ")
+        fun part(prefix: String, e: Extreme, highlight: Boolean) {
+            val start = out.length
+            out.append(prefix).append(' ').append(Money.formatBankRate(e.value))
+                .append(" (").append(bankNames(e.banks)).append(')')
+            if (highlight) {
+                out.setSpan(
+                    android.text.style.ForegroundColorSpan(getColor(R.color.best)),
+                    start, out.length, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
+                )
+                out.setSpan(
+                    android.text.style.StyleSpan(Typeface.BOLD),
+                    start, out.length, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
+                )
+            }
+        }
+        part("мин", ext.min, highlight = !bestIsMax)
+        out.append(" · ")
+        part("макс", ext.max, highlight = bestIsMax)
+        return out
     }
 
     private fun bankNames(names: List<String>) =

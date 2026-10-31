@@ -13,4 +13,5 @@
     <color name="icon_bg">#FF2F5BD3</color>
     <color name="accent">#FF2F5BD3</color>
     <color name="card">#FFFFFFFF</color>
+    <color name="best">#FF2E7D32</color>
 </resources>

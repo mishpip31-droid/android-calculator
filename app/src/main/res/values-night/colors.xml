@@ -12,4 +12,5 @@
     <color name="ripple">#33FFFFFF</color>
     <color name="accent">#FFA9C1FF</color>
     <color name="card">#FF1E1E22</color>
+    <color name="best">#FF81C784</color>
 </resources>

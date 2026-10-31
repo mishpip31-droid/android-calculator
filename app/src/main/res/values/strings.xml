@@ -57,12 +57,11 @@
     <string name="bank">Банк</string>
     <string name="buy_column">Покупка</string>
     <string name="sell_column">Продажа</string>
-    <string name="range_line">%1$s: мин %2$s (%3$s) · макс %4$s (%5$s)</string>
     <string name="range_buy">Покупка</string>
     <string name="range_sell">Продажа</string>
     <string name="banks_loading">Загружаю курсы банков…</string>
     <string name="banks_unavailable">Курсы банков недоступны — проверьте интернет и нажмите «Обновить».</string>
-    <string name="banks_footer">Источник: %1$s · обновлено %2$s. Выгоднейшие курсы выделены. Нажмите на банк, чтобы считать по его курсу.</string>
+    <string name="banks_footer">Источник: %1$s · обновлено %2$s. Лучшие курсы выделены зелёным. Нажмите на банк, чтобы считать по его курсу.</string>
     <string name="banks_footer_offline">нет связи</string>
     <string name="bank_rate_missing">нет курса</string>
 </resources>
