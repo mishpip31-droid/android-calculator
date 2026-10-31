@@ -401,12 +401,16 @@ class MainActivity : ThemedActivity() {
         PopupMenu(this, anchor, Gravity.END).apply {
             menu.add(0, 1, 0, if (FloatingCalculatorService.running) R.string.menu_floating_off else R.string.menu_floating_on)
             menu.add(0, 2, 1, R.string.menu_appearance)
-            menu.add(0, 3, 2, R.string.menu_about)
+            menu.add(0, 3, 2, R.string.menu_instructions)
+            menu.add(0, 4, 3, R.string.menu_privacy)
+            menu.add(0, 5, 4, R.string.menu_app_info)
             setOnMenuItemClickListener {
                 when (it.itemId) {
                     1 -> toggleFloating()
                     2 -> ThemeManager.showPicker(this@MainActivity)
                     3 -> startActivity(Intent(this@MainActivity, AboutActivity::class.java))
+                    4 -> startActivity(Intent(this@MainActivity, PrivacyActivity::class.java))
+                    5 -> startActivity(Intent(this@MainActivity, AppInfoActivity::class.java))
                 }
                 true
             }

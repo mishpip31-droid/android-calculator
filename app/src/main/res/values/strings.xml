@@ -75,7 +75,7 @@
     <string name="desc_info">Инструкция и о приложении</string>
     <string name="about_title">Инструкция</string>
     <string name="about_version">Версия %1$s</string>
-    <string name="about_developer">Разработчик: Mikhail Pipchanka</string>
+    <string name="about_developer">Разработчик: &lt;b&gt;Mikhail Pipchanka&lt;/b&gt;</string>
     <string name="about_footer">© Mikhail Pipchanka</string>
     <string name="desc_clear_amount">Очистить суммы</string>
     <string name="privacy_title">Политика конфиденциальности</string>
@@ -152,6 +152,15 @@
     <string name="menu_floating_on">🪟 Калькулятор поверх окон</string>
     <string name="menu_floating_off">🪟 Закрыть калькулятор поверх окон</string>
     <string name="menu_appearance">🎨 Оформление</string>
-    <string name="menu_about">ⓘ Инструкция и о приложении</string>
+    <string name="menu_instructions">📖 Инструкция</string>
+    <string name="menu_privacy">🔒 Политика конфиденциальности</string>
+    <string name="menu_app_info">ⓘ О приложении</string>
     <string name="desc_menu">Меню</string>
+    <string name="app_info_title">О приложении</string>
+    <string name="promo_title">Больше, чем калькулятор</string>
+    <string name="promo_text">Считайте, сравнивайте курсы и планируйте покупки в одном приложении. Быстро, понятно и без лишнего — всё работает прямо на телефоне, без регистрации и рекламы.</string>
+    <string name="promo_footer">💚 Бесплатно. Без рекламы. Без сбора данных.</string>
+    <string name="share_app">Поделиться приложением</string>
+    <string name="share_app_text">Попробуй «Калькулятор» — калькулятор с курсами всех банков Минска, списками покупок, историей с заметками и окном поверх других приложений. Бесплатно и без рекламы:\nhttps://github.com/mishpip31-droid/android-calculator/releases/latest/download/calculator.apk</string>
+    <string name="app_info_sources">Курсы: Национальный банк РБ, myfin.by, Беларусбанк, Альфа-Банк, CoinGecko. Перед обменом уточняйте курс в банке.</string>
 </resources>

@@ -41,55 +41,8 @@
             android:orientation="vertical"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
-            android:paddingBottom="24dp">
+            android:paddingBottom="32dp">
 
-            <!-- О приложении и разработчике -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:background="@drawable/card_static_bg"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <ImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:importantForAccessibility="no"
-                    android:src="@mipmap/ic_launcher" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/app_name"
-                        android:textColor="?attr/c_text_primary"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/aboutVersion"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="?attr/c_text_secondary"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:text="@string/about_developer"
-                        android:textColor="?attr/c_text_primary"
-                        android:textSize="15sp" />
-                </LinearLayout>
-            </LinearLayout>
 
             <TextView
                 style="@style/AboutHeading"
@@ -299,64 +252,6 @@
                 style="@style/AboutItem"
                 android:text="• Нажмите на название банка — конвертер будет считать по его курсу." />
 
-            <TextView
-                style="@style/AboutHeading"
-                android:text="Оформление" />
-
-            <TextView
-                style="@style/AboutItem"
-                android:text="• Кнопка «Оформление» ниже: «Как в системе» (по умолчанию — светлая или тёмная вслед за настройкой телефона), «Светлая» или «Тёмная»." />
-
-            <TextView
-                style="@style/AboutHeading"
-                android:text="Откуда данные" />
-
-            <TextView
-                style="@style/AboutItem"
-                android:text="• Официальные курсы — Национальный банк Республики Беларусь (nbrb.by)." />
-
-            <TextView
-                style="@style/AboutItem"
-                android:text="• Биткоин — CoinGecko (запасные: Coinbase, Binance)." />
-
-            <TextView
-                style="@style/AboutItem"
-                android:text="• Курсы банков и адреса отделений — myfin.by; запасной вариант — открытые API Беларусбанка и Альфа-Банка. Перед обменом уточняйте курс в банке." />
-
-            <TextView
-                android:id="@+id/btnAppearance"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="24dp"
-                android:background="@drawable/pill_bg"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="@string/appearance_button"
-                android:textColor="?attr/c_btn_op_text"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/btnPrivacy"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/pill_bg"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="@string/privacy_title"
-                android:textColor="?attr/c_btn_op_text"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:gravity="center"
-                android:text="@string/about_footer"
-                android:textColor="?attr/c_text_secondary"
-                android:textSize="13sp" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
