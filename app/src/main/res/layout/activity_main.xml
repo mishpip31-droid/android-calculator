@@ -96,6 +96,20 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/btnQuickSum"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/pill_bg"
+            android:clickable="true"
+            android:contentDescription="@string/desc_quick_sum"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="Σ"
+            android:textColor="?attr/c_btn_op_text"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/btnShopping"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
@@ -104,14 +118,14 @@
             android:clickable="true"
             android:contentDescription="@string/desc_shopping"
             android:drawableStart="@drawable/ic_cart_small"
-            android:drawablePadding="5dp"
+            android:drawablePadding="4dp"
             android:focusable="true"
             android:gravity="center"
-            android:paddingStart="10dp"
-            android:paddingEnd="12dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="10dp"
             android:text="@string/shopping"
             android:textColor="?attr/c_btn_op_text"
-            android:textSize="15sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/btnConverter"
@@ -125,15 +139,15 @@
             android:drawablePadding="6dp"
             android:focusable="true"
             android:gravity="center"
-            android:paddingStart="10dp"
-            android:paddingEnd="12dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="10dp"
             android:text="@string/converter"
             android:textColor="?attr/c_btn_op_text"
-            android:textSize="15sp" />
+            android:textSize="14sp" />
 
         <ImageButton
             android:id="@+id/btnInfo"
-            android:layout_width="44dp"
+            android:layout_width="40dp"
             android:layout_height="48dp"
             android:background="@drawable/icon_button_bg"
             android:contentDescription="@string/desc_info"

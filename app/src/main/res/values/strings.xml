@@ -117,4 +117,20 @@
     <string name="theme_auto">Автоматически по календарю</string>
     <string name="theme_off">Без праздничных тем</string>
     <string name="themes_button">🎨 Праздничные темы</string>
+    <string name="quick_sum_title">Быстрая сумма</string>
+    <string name="desc_quick_sum">Быстрая сумма: сложить числа лентой</string>
+    <string name="quick_sum_total_label">Итого</string>
+    <string name="quick_sum_info">Чисел: %1$d</string>
+    <string name="quick_sum_info_excluded">Чисел: %1$d · не учтено: %2$d</string>
+    <string name="quick_sum_empty">Вводите числа одно за другим и нажимайте «Готово» — итог считается сразу.\n\nМожно с подписью: «хлеб 1.9» или «5.40 молоко», с умножением: «молоко 2×2.35», с минусом: «скидка −5».\n\nНажатие на строку — не учитывать, свайп — удалить, удержание — изменить.</string>
+    <string name="quick_sum_hint">Число или «хлеб 1.9»</string>
+    <string name="quick_sum_add">Добавить в ленту</string>
+    <string name="quick_sum_clear">Очистить ленту</string>
+    <string name="quick_sum_cleared">Лента очищена</string>
+    <string name="quick_sum_deleted">Удалено: %1$s</string>
+    <string name="quick_sum_bad_input">Не нашёл число — напишите, например, «1.9» или «хлеб 1.9»</string>
+    <string name="quick_sum_keyboard">Переключить клавиатуру: цифры или буквы</string>
+    <string name="quick_sum_edit">Строка ленты</string>
+    <string name="quick_sum_label_hint">Подпись (необязательно)</string>
+    <string name="quick_sum_amount_hint">Число или выражение</string>
 </resources>

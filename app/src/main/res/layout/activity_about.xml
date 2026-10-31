@@ -161,6 +161,30 @@
 
             <TextView
                 style="@style/AboutHeading"
+                android:text="Быстрая сумма" />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Кнопка Σ на главном экране. Вводите числа одно за другим и нажимайте «Готово» — итог сразу сверху крупно." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Можно с подписью: «хлеб 1.9» или «5.40 молоко», с умножением: «молоко 2×2.35», с минусом: «скидка −5»." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Кнопка «абв / 123» слева от поля переключает клавиатуру: только цифры (быстрее) или с буквами (для подписей)." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Нажмите на строку — она перестанет учитываться (зачёркнута), нажмите ещё раз — вернётся. Смахните — удалится, внизу «Отменить». Удерживайте — изменить." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• «В калькулятор» — итог попадёт в пример, а вся лента — в историю. Кнопка «Поделиться» отправит ленту текстом." />
+
+            <TextView
+                style="@style/AboutHeading"
                 android:text="Покупки" />
 
             <TextView

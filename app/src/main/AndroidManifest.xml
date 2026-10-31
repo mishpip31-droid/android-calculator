@@ -37,5 +37,9 @@
             android:name=".ShoppingListActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
+            android:name=".QuickSumActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateVisible" />
     </application>
 </manifest>

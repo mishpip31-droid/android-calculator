@@ -123,6 +123,14 @@ class MainActivity : ThemedActivity() {
     private fun handleInsert(intent: Intent?) {
         val value = intent?.getStringExtra(EXTRA_INSERT_NUMBER) ?: return
         intent.removeExtra(EXTRA_INSERT_NUMBER)
+        // «Быстрая сумма» передаёт и запись для истории.
+        val expr = intent.getStringExtra(EXTRA_HISTORY_EXPRESSION)
+        val result = intent.getStringExtra(EXTRA_HISTORY_RESULT)
+        if (expr != null && result != null) {
+            intent.removeExtra(EXTRA_HISTORY_EXPRESSION)
+            intent.removeExtra(EXTRA_HISTORY_RESULT)
+            addToHistory(HistoryEntry(expr, result))
+        }
         if (historyExpanded) setHistoryExpanded(false)
         calculator.insertNumber(value.replace('-', '−'))
         render()
@@ -198,6 +206,11 @@ class MainActivity : ThemedActivity() {
             }
             override fun onScroll(view: android.widget.AbsListView, first: Int, visible: Int, total: Int) {}
         })
+
+        findViewById<View>(R.id.btnQuickSum).setOnClickListener {
+            it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            startActivity(Intent(this, QuickSumActivity::class.java))
+        }
 
         findViewById<View>(R.id.btnShopping).setOnClickListener {
             it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
@@ -433,6 +446,7 @@ class MainActivity : ThemedActivity() {
         converterButton.visibility = if (historyExpanded) View.GONE else View.VISIBLE
         findViewById<View>(R.id.btnInfo).visibility = if (historyExpanded) View.GONE else View.VISIBLE
         findViewById<View>(R.id.btnShopping).visibility = if (historyExpanded) View.GONE else View.VISIBLE
+        findViewById<View>(R.id.btnQuickSum).visibility = if (historyExpanded) View.GONE else View.VISIBLE
         refreshTiles()
         clearHistory.visibility = if (historyExpanded && !empty) View.VISIBLE else View.GONE
         toggleHistory.setImageResource(if (historyExpanded) R.drawable.ic_keypad else R.drawable.ic_history)
