@@ -421,10 +421,7 @@ class MainActivity : ThemedActivity() {
             FloatingCalculatorService.stop(this)
             return
         }
-        if (FloatingCalculatorService.start(this)) {
-            Toast.makeText(this, R.string.floating_started, Toast.LENGTH_LONG).show()
-            return
-        }
+        if (FloatingCalculatorService.start(this)) return
         AlertDialog.Builder(this)
             .setTitle(R.string.floating_permission_title)
             .setMessage(R.string.floating_permission_message)
@@ -445,9 +442,7 @@ class MainActivity : ThemedActivity() {
         // Вернулись из настроек с разрешением — сразу открываем окно.
         if (floatingPermissionAsked) {
             floatingPermissionAsked = false
-            if (FloatingCalculatorService.start(this)) {
-                Toast.makeText(this, R.string.floating_started, Toast.LENGTH_LONG).show()
-            }
+            FloatingCalculatorService.start(this)
         }
     }
 

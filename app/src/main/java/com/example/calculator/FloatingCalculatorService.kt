@@ -74,7 +74,11 @@ class FloatingCalculatorService : Service() {
                 stopSelf()
                 return START_NOT_STICKY
             }
-            else -> if (window == null && bubble == null) showWindow() else if (bubble != null) expand()
+            else -> {
+                if (window == null && bubble == null) showWindow() else if (bubble != null) expand()
+                // Основное приложение сворачивается — остаётся только плавающее окно.
+                ThemedActivity.moveAppToBack()
+            }
         }
         return START_NOT_STICKY
     }

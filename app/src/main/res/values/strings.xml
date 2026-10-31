@@ -149,7 +149,6 @@
     <string name="floating_permission_title">Калькулятор поверх окон</string>
     <string name="floating_permission_message">Чтобы окно калькулятора было поверх других приложений, Android попросит разрешение «Поверх других приложений».\n\nНа следующем экране включите его для «Калькулятора» и вернитесь назад.</string>
     <string name="floating_permission_go">Открыть настройки</string>
-    <string name="floating_started">Окно появится поверх других приложений. Сверните приложение — калькулятор останется.</string>
     <string name="menu_floating_on">🪟 Калькулятор поверх окон</string>
     <string name="menu_floating_off">🪟 Закрыть калькулятор поверх окон</string>
     <string name="menu_appearance">🎨 Оформление</string>

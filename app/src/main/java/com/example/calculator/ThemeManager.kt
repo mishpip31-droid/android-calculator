@@ -68,7 +68,22 @@ open class ThemedActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        resumed = java.lang.ref.WeakReference(this)
         // Оформление сменили на другом экране — перерисовываемся.
         if (ThemeManager.mode(this) != appliedMode) recreate()
+    }
+
+    override fun onPause() {
+        if (resumed?.get() === this) resumed = null
+        super.onPause()
+    }
+
+    companion object {
+        private var resumed: java.lang.ref.WeakReference<ThemedActivity>? = null
+
+        /** Свернуть приложение (используется при открытии плавающего калькулятора). */
+        fun moveAppToBack() {
+            resumed?.get()?.moveTaskToBack(true)
+        }
     }
 }
