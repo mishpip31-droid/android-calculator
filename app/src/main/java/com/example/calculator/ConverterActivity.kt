@@ -146,7 +146,18 @@ class ConverterActivity : Activity() {
         row.findViewById<TextView>(R.id.currencyName).text = c.title
         rateLabels[c] = row.findViewById(R.id.currencyRate)
         val field = row.findViewById<EditText>(R.id.currencyAmount)
+        val clear = row.findViewById<View>(R.id.currencyClear)
         fields[c] = field
+        fun updateClear() {
+            clear.visibility = if (field.hasFocus() && field.text.isNotEmpty()) View.VISIBLE else View.GONE
+        }
+        field.setOnFocusChangeListener { _, _ -> updateClear() }
+        clear.setOnClickListener {
+            it.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP)
+            field.setText("") // пересчёт очистит и остальные строки
+            field.requestFocus()
+            getSystemService(InputMethodManager::class.java).showSoftInput(field, 0)
+        }
         row.setOnClickListener {
             field.requestFocus()
             field.setSelection(field.text.length)
@@ -156,6 +167,7 @@ class ConverterActivity : Activity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable) {
+                updateClear()
                 if (updating) return
                 source = c
                 amount = Money.parse(s.toString())

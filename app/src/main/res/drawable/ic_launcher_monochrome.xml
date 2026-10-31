@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Для тематических иконок Android 13+: только символы -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M39,33h4v16h-4zM33,39h16v4h-16zM59,39h16v4h-16zM59,61h16v4h-16zM59,69h16v4h-16z" />
+    <group
+        android:pivotX="41"
+        android:pivotY="67"
+        android:rotation="45">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M39,59h4v16h-4zM33,65h16v4h-16z" />
+    </group>
+</vector>

@@ -57,4 +57,15 @@
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_secondary"
         android:textSize="28sp" />
+
+    <!-- Появляется, когда строка выбрана и в ней есть сумма: очищает все строки -->
+    <ImageButton
+        android:id="@+id/currencyClear"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/icon_button_bg"
+        android:contentDescription="@string/desc_clear_amount"
+        android:src="@drawable/ic_clear"
+        android:visibility="gone" />
 </LinearLayout>

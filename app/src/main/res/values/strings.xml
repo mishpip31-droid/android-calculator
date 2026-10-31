@@ -77,4 +77,6 @@
     <string name="about_version">Версия %1$s</string>
     <string name="about_developer">Разработчик: Mikhail Pipchanka</string>
     <string name="about_footer">© Mikhail Pipchanka</string>
+    <string name="desc_clear_amount">Очистить суммы</string>
+    <string name="privacy_title">Политика конфиденциальности</string>
 </resources>

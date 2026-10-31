@@ -4,16 +4,37 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Корпус калькулятора -->
+    <!-- Тень под клавишами -->
+    <path
+        android:fillColor="#26000000"
+        android:pathData="M36,32h10a6,6 0,0 1,6 6v10a6,6 0,0 1,-6 6h-10a6,6 0,0 1,-6 -6v-10a6,6 0,0 1,6 -6zM62,32h10a6,6 0,0 1,6 6v10a6,6 0,0 1,-6 6h-10a6,6 0,0 1,-6 -6v-10a6,6 0,0 1,6 -6zM36,58h10a6,6 0,0 1,6 6v10a6,6 0,0 1,-6 6h-10a6,6 0,0 1,-6 -6v-10a6,6 0,0 1,6 -6zM62,58h10a6,6 0,0 1,6 6v10a6,6 0,0 1,-6 6h-10a6,6 0,0 1,-6 -6v-10a6,6 0,0 1,6 -6z" />
+    <!-- Три белые клавиши -->
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M40,30h28a4,4 0,0 1,4 4v40a4,4 0,0 1,-4 4h-28a4,4 0,0 1,-4 -4v-40a4,4 0,0 1,4 -4z" />
-    <!-- Экран -->
+        android:pathData="M36,30h10a6,6 0,0 1,6 6v10a6,6 0,0 1,-6 6h-10a6,6 0,0 1,-6 -6v-10a6,6 0,0 1,6 -6zM62,30h10a6,6 0,0 1,6 6v10a6,6 0,0 1,-6 6h-10a6,6 0,0 1,-6 -6v-10a6,6 0,0 1,6 -6zM36,56h10a6,6 0,0 1,6 6v10a6,6 0,0 1,-6 6h-10a6,6 0,0 1,-6 -6v-10a6,6 0,0 1,6 -6z" />
+    <!-- Клавиша «=» — зелёная, как «выгодный курс» -->
     <path
-        android:fillColor="#FF2F5BD3"
-        android:pathData="M42,35h24v9h-24z" />
-    <!-- Кнопки -->
+        android:fillColor="#FF22C55E"
+        android:pathData="M62,56h10a6,6 0,0 1,6 6v10a6,6 0,0 1,-6 6h-10a6,6 0,0 1,-6 -6v-10a6,6 0,0 1,6 -6z" />
+    <!-- + -->
     <path
-        android:fillColor="#FF2F5BD3"
-        android:pathData="M42,49h6v6h-6zM51,49h6v6h-6zM60,49h6v6h-6zM42,58h6v6h-6zM51,58h6v6h-6zM60,58h6v15h-6zM42,67h6v6h-6zM51,67h6v6h-6z" />
+        android:fillColor="#FF4F46E5"
+        android:pathData="M39.5,35h3v12h-3zM35,39.5h12v3h-12z" />
+    <!-- − -->
+    <path
+        android:fillColor="#FF4F46E5"
+        android:pathData="M61,39.5h12v3h-12z" />
+    <!-- × -->
+    <group
+        android:pivotX="41"
+        android:pivotY="67"
+        android:rotation="45">
+        <path
+            android:fillColor="#FF4F46E5"
+            android:pathData="M39.5,61h3v12h-3zM35,65.5h12v3h-12z" />
+    </group>
+    <!-- = -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M61,62.5h12v3h-12zM61,68.5h12v3h-12z" />
 </vector>

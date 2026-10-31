@@ -180,6 +180,10 @@
                 android:text="• ⟳ — обновить курсы. Без интернета используются последние сохранённые." />
 
             <TextView
+                style="@style/AboutItem"
+                android:text="• Нажмите на строку с суммой — справа появится ⓧ: он быстро очищает все суммы." />
+
+            <TextView
                 style="@style/AboutHeading"
                 android:text="Курсы банков" />
 
@@ -220,9 +224,22 @@
                 android:text="• Курсы банков и адреса отделений — myfin.by; запасной вариант — открытые API Беларусбанка и Альфа-Банка. Перед обменом уточняйте курс в банке." />
 
             <TextView
+                android:id="@+id/btnPrivacy"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/pill_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="@string/privacy_title"
+                android:textColor="@color/btn_op_text"
+                android:textSize="16sp" />
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
+                android:layout_marginTop="20dp"
                 android:gravity="center"
                 android:text="@string/about_footer"
                 android:textColor="@color/text_secondary"
