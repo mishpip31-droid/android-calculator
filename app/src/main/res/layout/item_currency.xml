@@ -21,7 +21,7 @@
             android:id="@+id/currencyCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/accent"
+            android:textColor="?attr/c_accent"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -29,14 +29,14 @@
             android:id="@+id/currencyName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/text_secondary"
+            android:textColor="?attr/c_text_secondary"
             android:textSize="13sp" />
 
         <TextView
             android:id="@+id/currencyRate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/text_secondary"
+            android:textColor="?attr/c_text_secondary"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -54,8 +54,8 @@
         android:inputType="numberDecimal"
         android:maxLines="1"
         android:selectAllOnFocus="false"
-        android:textColor="@color/text_primary"
-        android:textColorHint="@color/text_secondary"
+        android:textColor="?attr/c_text_primary"
+        android:textColorHint="?attr/c_text_secondary"
         android:textSize="28sp" />
 
     <!-- Появляется, когда строка выбрана и в ней есть сумма: очищает все строки -->

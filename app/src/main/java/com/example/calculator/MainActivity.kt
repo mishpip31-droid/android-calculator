@@ -22,7 +22,7 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 
-class MainActivity : Activity() {
+class MainActivity : ThemedActivity() {
     private val calculator = Calculator()
     private val history = History()
     private lateinit var historyStore: HistoryStore
@@ -92,6 +92,26 @@ class MainActivity : Activity() {
         render()
         historyList.setSelection(history.size - 1)
         if (savedInstanceState == null) handleInsert(intent)
+        setupHoliday(firstOpen = savedInstanceState == null)
+    }
+
+    /** Праздничная тема: поздравление вверху и падающие эмодзи при открытии. */
+    private fun setupHoliday(firstOpen: Boolean) {
+        val banner = findViewById<TextView>(R.id.holidayBanner)
+        val particles = findViewById<ParticlesView>(R.id.particles)
+        val h = holiday
+        if (h == null) {
+            banner.visibility = View.GONE
+            return
+        }
+        banner.visibility = View.VISIBLE
+        banner.text = h.greeting(Day.today())
+        banner.setOnClickListener { ThemeManager.showPicker(this) }
+        banner.setOnLongClickListener {
+            particles.start(h.emoji)
+            true
+        }
+        if (firstOpen) particles.post { particles.start(h.emoji) }
     }
 
     /** Возврат из списка покупок: «В калькулятор» вставляет итог в выражение. */
@@ -434,10 +454,10 @@ class MainActivity : Activity() {
         val error = calculator.error
         if (error != null) {
             resultView.text = error
-            resultView.setTextColor(getColor(R.color.error))
+            resultView.setTextColor(themeColor(R.attr.c_error))
         } else {
             resultView.text = calculator.preview()?.let { "= $it" } ?: ""
-            resultView.setTextColor(getColor(R.color.text_secondary))
+            resultView.setTextColor(themeColor(R.attr.c_text_secondary))
         }
         scroll.post { scroll.fullScroll(View.FOCUS_RIGHT) }
     }

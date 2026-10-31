@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="@color/text_primary"
+                android:textColor="?attr/c_text_primary"
                 android:textSize="20sp" />
 
             <TextView
@@ -45,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:textColor="@color/text_secondary"
+                android:textColor="?attr/c_text_secondary"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -85,7 +85,7 @@
             android:gravity="center"
             android:padding="32dp"
             android:text="@string/shopping_items_empty"
-            android:textColor="@color/text_secondary"
+            android:textColor="?attr/c_text_secondary"
             android:textSize="16sp"
             android:visibility="gone" />
     </FrameLayout>
@@ -116,7 +116,7 @@
                 android:id="@+id/totalText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_primary"
+                android:textColor="?attr/c_text_primary"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -124,7 +124,7 @@
                 android:id="@+id/spentText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_secondary"
+                android:textColor="?attr/c_text_secondary"
                 android:textSize="13sp" />
         </LinearLayout>
 
@@ -139,7 +139,7 @@
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:text="@string/to_calculator"
-            android:textColor="@color/btn_op_text"
+            android:textColor="?attr/c_btn_op_text"
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -165,7 +165,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/undo_text"
+            android:textColor="?attr/c_undo_text"
             android:textSize="15sp" />
 
         <TextView
@@ -179,7 +179,7 @@
             android:paddingStart="14dp"
             android:paddingEnd="14dp"
             android:text="@string/undo"
-            android:textColor="@color/undo_action"
+            android:textColor="?attr/c_undo_action"
             android:textSize="15sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -206,8 +206,8 @@
             android:maxLines="1"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_secondary"
+            android:textColor="?attr/c_text_primary"
+            android:textColorHint="?attr/c_text_secondary"
             android:textSize="16sp" />
 
         <ImageButton

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Цвета оформления: меняются праздничными темами -->
+    <attr name="c_background" format="color" />
+    <attr name="c_text_primary" format="color" />
+    <attr name="c_text_secondary" format="color" />
+    <attr name="c_error" format="color" />
+    <attr name="c_btn_digit" format="color" />
+    <attr name="c_btn_func" format="color" />
+    <attr name="c_btn_op" format="color" />
+    <attr name="c_btn_op_text" format="color" />
+    <attr name="c_btn_equals" format="color" />
+    <attr name="c_btn_equals_text" format="color" />
+    <attr name="c_ripple" format="color" />
+    <attr name="c_accent" format="color" />
+    <attr name="c_card" format="color" />
+    <attr name="c_best" format="color" />
+    <attr name="c_divider" format="color" />
+    <attr name="c_undo_bg" format="color" />
+    <attr name="c_undo_text" format="color" />
+    <attr name="c_undo_action" format="color" />
+    <attr name="c_danger" format="color" />
+</resources>

@@ -32,7 +32,7 @@
                 android:id="@+id/branchAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_primary"
+                android:textColor="?attr/c_text_primary"
                 android:textSize="16sp" />
 
             <TextView
@@ -40,7 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:textColor="@color/text_secondary"
+                android:textColor="?attr/c_text_secondary"
                 android:textSize="13sp" />
         </LinearLayout>
     </LinearLayout>
@@ -49,5 +49,5 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="54dp"
-        android:background="@color/divider" />
+        android:background="?attr/c_divider" />
 </LinearLayout>

@@ -34,7 +34,7 @@ const val EXTRA_INSERT_NUMBER = "insert_number"
  * Один список покупок: добавление строкой ввода, нажатие — вычеркнуть,
  * свайп — удалить (с «Отменить»), удержание — изменить количество и цену.
  */
-class ShoppingListActivity : Activity() {
+class ShoppingListActivity : ThemedActivity() {
     private lateinit var book: ShoppingBook
     private var listId = 0L
 
@@ -344,7 +344,7 @@ class ShoppingListActivity : Activity() {
                     } else {
                         name.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                     }
-                    name.setTextColor(getColor(if (item.done) R.color.text_secondary else R.color.text_primary))
+                    name.setTextColor(themeColor(if (item.done) R.attr.c_text_secondary else R.attr.c_text_primary))
                     val d = item.details()
                     details.text = d
                     details.visibility = if (d.isEmpty()) View.GONE else View.VISIBLE
@@ -364,7 +364,7 @@ class ShoppingListActivity : Activity() {
 
     /** Свайп влево или вправо — удалить товар (с красным фоном «Удалить»). */
     private inner class SwipeToDelete : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-        private val bgPaint = Paint().apply { color = getColor(R.color.danger) }
+        private val bgPaint = Paint().apply { color = themeColor(R.attr.c_danger) }
         private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = 0xFFFFFFFF.toInt()
             textSize = 16 * resources.displayMetrics.scaledDensity

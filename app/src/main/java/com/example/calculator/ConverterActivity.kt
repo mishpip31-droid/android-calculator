@@ -24,7 +24,7 @@ import kotlin.concurrent.thread
  * Конвертер BYN / USD / EUR / BTC. Ввод в любой строке сразу пересчитывает остальные.
  * Курс — официальный НБРБ, лучший по банкам или конкретного банка (покупка/продажа).
  */
-class ConverterActivity : Activity() {
+class ConverterActivity : ThemedActivity() {
     private lateinit var repository: RatesRepository
     private lateinit var bankRepository: BankRatesRepository
     private lateinit var status: TextView
@@ -330,8 +330,8 @@ class ConverterActivity : Activity() {
         // Выгодно: сдать — по самой высокой покупке, купить — по самой низкой продаже.
         val bestBuy = buyExt?.max?.value
         val bestSell = sellExt?.min?.value
-        val bestColor = getColor(R.color.best)
-        val primary = getColor(R.color.text_primary)
+        val bestColor = themeColor(R.attr.c_best)
+        val primary = themeColor(R.attr.c_text_primary)
         for (bank in br.banks) {
             val q = bank.quotes[c] ?: continue
             val row = LayoutInflater.from(this).inflate(R.layout.item_bank_row, bankTable, false)
@@ -371,7 +371,7 @@ class ConverterActivity : Activity() {
                 .append(" (").append(bankNames(e.banks)).append(')')
             if (highlight) {
                 out.setSpan(
-                    android.text.style.ForegroundColorSpan(getColor(R.color.best)),
+                    android.text.style.ForegroundColorSpan(themeColor(R.attr.c_best)),
                     start, out.length, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
                 )
                 out.setSpan(
@@ -446,7 +446,7 @@ class ConverterActivity : Activity() {
             out.append(getString(label)).append(' ').append(v?.let(Money::formatBankRate) ?: "—")
             if (partSide == side && v != null && v.compareTo(value) == 0) {
                 out.setSpan(
-                    android.text.style.ForegroundColorSpan(getColor(R.color.best)),
+                    android.text.style.ForegroundColorSpan(themeColor(R.attr.c_best)),
                     start, out.length, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
                 )
                 out.setSpan(
@@ -472,18 +472,18 @@ class ConverterActivity : Activity() {
                 text = bankName
                 textSize = 20f
                 setTypeface(null, Typeface.BOLD)
-                setTextColor(getColor(R.color.text_primary))
+                setTextColor(themeColor(R.attr.c_text_primary))
             })
             addView(TextView(context).apply {
                 text = subtitle
                 textSize = 15f
-                setTextColor(getColor(R.color.text_primary))
+                setTextColor(themeColor(R.attr.c_text_primary))
                 setPadding(0, pad / 4, 0, 0)
             })
             addView(TextView(context).apply {
                 setText(R.string.branches_hint)
                 textSize = 13f
-                setTextColor(getColor(R.color.text_secondary))
+                setTextColor(themeColor(R.attr.c_text_secondary))
                 setPadding(0, pad / 4, 0, 0)
             })
         }
@@ -496,7 +496,7 @@ class ConverterActivity : Activity() {
             this.text = text
             setPadding(pad, pad, pad, pad / 2)
             textSize = 17f
-            setTextColor(getColor(R.color.text_primary))
+            setTextColor(themeColor(R.attr.c_text_primary))
         }
     }
 

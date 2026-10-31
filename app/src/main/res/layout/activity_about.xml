@@ -27,7 +27,7 @@
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:text="@string/about_title"
-            android:textColor="@color/text_primary"
+            android:textColor="?attr/c_text_primary"
             android:textSize="20sp" />
     </LinearLayout>
 
@@ -70,7 +70,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/app_name"
-                        android:textColor="@color/text_primary"
+                        android:textColor="?attr/c_text_primary"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
@@ -78,7 +78,7 @@
                         android:id="@+id/aboutVersion"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="?attr/c_text_secondary"
                         android:textSize="14sp" />
 
                     <TextView
@@ -86,7 +86,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
                         android:text="@string/about_developer"
-                        android:textColor="@color/text_primary"
+                        android:textColor="?attr/c_text_primary"
                         android:textSize="15sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -245,6 +245,22 @@
 
             <TextView
                 style="@style/AboutHeading"
+                android:text="Праздничные темы" />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• В праздники приложение само меняет оформление: Новый год, Рождество, 14 февраля, 23 февраля, Масленица, 8 Марта, Пасха, 1 Мая, 9 Мая, 3 июля, Купалье, 1 сентября, День матери, Хэллоуин." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Вверху появляется поздравление, а при открытии падают снежинки, сердечки, цветы… Удерживайте поздравление — анимация повторится." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Нажмите на поздравление или кнопку «Праздничные темы» ниже: можно выбрать «Автоматически», выключить темы или включить любую тему вручную." />
+
+            <TextView
+                style="@style/AboutHeading"
                 android:text="Откуда данные" />
 
             <TextView
@@ -260,7 +276,7 @@
                 android:text="• Курсы банков и адреса отделений — myfin.by; запасной вариант — открытые API Беларусбанка и Альфа-Банка. Перед обменом уточняйте курс в банке." />
 
             <TextView
-                android:id="@+id/btnPrivacy"
+                android:id="@+id/btnThemes"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="24dp"
@@ -268,8 +284,21 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
+                android:text="@string/themes_button"
+                android:textColor="?attr/c_btn_op_text"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/btnPrivacy"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/pill_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
                 android:text="@string/privacy_title"
-                android:textColor="@color/btn_op_text"
+                android:textColor="?attr/c_btn_op_text"
                 android:textSize="16sp" />
 
             <TextView
@@ -278,7 +307,7 @@
                 android:layout_marginTop="20dp"
                 android:gravity="center"
                 android:text="@string/about_footer"
-                android:textColor="@color/text_secondary"
+                android:textColor="?attr/c_text_secondary"
                 android:textSize="13sp" />
         </LinearLayout>
     </ScrollView>

@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textColor="@color/accent"
+        android:textColor="?attr/c_accent"
         android:textSize="14sp"
         android:textStyle="bold"
         android:visibility="gone" />
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:ellipsize="start"
         android:maxLines="1"
-        android:textColor="@color/text_secondary"
+        android:textColor="?attr/c_text_secondary"
         android:textSize="18sp" />
 
     <TextView
@@ -36,6 +36,6 @@
         android:layout_height="wrap_content"
         android:ellipsize="start"
         android:maxLines="1"
-        android:textColor="@color/text_primary"
+        android:textColor="?attr/c_text_primary"
         android:textSize="24sp" />
 </LinearLayout>

@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.TextView
 
 /** Политика конфиденциальности (текст — res/raw/privacy.txt, копия — PRIVACY.md в репозитории). */
-class PrivacyActivity : Activity() {
+class PrivacyActivity : ThemedActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_privacy)

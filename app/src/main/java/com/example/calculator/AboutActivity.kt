@@ -6,11 +6,12 @@ import android.view.View
 import android.widget.TextView
 
 /** Инструкция по приложению и информация о разработчике. */
-class AboutActivity : Activity() {
+class AboutActivity : ThemedActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
         findViewById<View>(R.id.btnBack).setOnClickListener { finish() }
+        findViewById<View>(R.id.btnThemes).setOnClickListener { ThemeManager.showPicker(this) }
         findViewById<View>(R.id.btnPrivacy).setOnClickListener {
             startActivity(android.content.Intent(this, PrivacyActivity::class.java))
         }

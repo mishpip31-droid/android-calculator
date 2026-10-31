@@ -20,7 +20,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 
 /** Все списки покупок плитками. */
-class ShoppingListsActivity : Activity() {
+class ShoppingListsActivity : ThemedActivity() {
     private lateinit var book: ShoppingBook
     private lateinit var grid: GridView
     private lateinit var empty: TextView

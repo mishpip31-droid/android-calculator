@@ -1,7 +1,26 @@
 <resources>
     <style name="AppTheme" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@color/background</item>
-        <item name="android:statusBarColor">@color/background</item>
-        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:windowBackground">?attr/c_background</item>
+        <item name="android:statusBarColor">?attr/c_background</item>
+        <item name="android:navigationBarColor">?attr/c_background</item>
+        <item name="c_background">@color/background</item>
+        <item name="c_text_primary">@color/text_primary</item>
+        <item name="c_text_secondary">@color/text_secondary</item>
+        <item name="c_error">@color/error</item>
+        <item name="c_btn_digit">@color/btn_digit</item>
+        <item name="c_btn_func">@color/btn_func</item>
+        <item name="c_btn_op">@color/btn_op</item>
+        <item name="c_btn_op_text">@color/btn_op_text</item>
+        <item name="c_btn_equals">@color/btn_equals</item>
+        <item name="c_btn_equals_text">@color/btn_equals_text</item>
+        <item name="c_ripple">@color/ripple</item>
+        <item name="c_accent">@color/accent</item>
+        <item name="c_card">@color/card</item>
+        <item name="c_best">@color/best</item>
+        <item name="c_divider">@color/divider</item>
+        <item name="c_undo_bg">@color/undo_bg</item>
+        <item name="c_undo_text">@color/undo_text</item>
+        <item name="c_undo_action">@color/undo_action</item>
+        <item name="c_danger">@color/danger</item>
     </style>
 </resources>
