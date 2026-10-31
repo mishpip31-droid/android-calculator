@@ -64,8 +64,9 @@
     <string name="banks_footer">Источник: %1$s · обновлено %2$s. Лучшие курсы выделены зелёным. Нажмите на курс — покажу адреса отделений, на название банка — считать по его курсу.</string>
     <string name="banks_footer_offline">нет связи</string>
     <string name="bank_rate_missing">нет курса</string>
-    <string name="branches_title">%1$s · %2$s\nОтделений: %3$d — нажмите на адрес, чтобы открыть карту</string>
-    <string name="branches_title_all">%1$s · все отделения (%2$d)\nНажмите на адрес, чтобы открыть карту</string>
+    <string name="branches_subtitle">%1$s · отделений: %2$d</string>
+    <string name="branches_subtitle_all">Точного совпадения нет — все отделения (%1$d), лучшие сверху</string>
+    <string name="branches_hint">Нажмите на адрес, чтобы открыть карту</string>
     <string name="branches_none">Для этого банка нет списка отделений с курсами. Обычно это значит, что такой курс действует в мобильном приложении или интернет-банке, а не в кассе.\n\nМожно найти отделения банка на карте и уточнить курс там.</string>
     <string name="branches_loading">Загружаю адреса отделений…</string>
     <string name="find_on_map">Найти на карте</string>

@@ -401,27 +401,80 @@ class ConverterActivity : Activity() {
                     .let { if (side == Side.BUY) it.reversed() else it },
             )
         }
-        val title = if (matching.isNotEmpty()) {
-            getString(R.string.branches_title, bank.name, rateText, matching.size)
+        val subtitle = if (matching.isNotEmpty()) {
+            getString(R.string.branches_subtitle, rateText.replaceFirstChar { it.uppercase() }, matching.size)
         } else {
-            getString(R.string.branches_title_all, bank.name, all.size)
+            getString(R.string.branches_subtitle_all, all.size)
         }
-        val items = list.map<Branch, CharSequence> { b ->
-            buildString {
-                append(b.address)
-                append("\n")
-                append(getString(R.string.range_buy)).append(' ')
-                append(b.quote.buy?.let(Money::formatBankRate) ?: "—")
-                append(" · ").append(getString(R.string.range_sell)).append(' ')
-                append(b.quote.sell?.let(Money::formatBankRate) ?: "—")
-                if (b.time.isNotEmpty()) append(" · ").append(b.time)
+        val adapter = object : android.widget.BaseAdapter() {
+            override fun getCount() = list.size
+            override fun getItem(position: Int) = list[position]
+            override fun getItemId(position: Int) = position.toLong()
+            override fun getView(position: Int, convertView: View?, parent: android.view.ViewGroup): View {
+                val view = convertView ?: LayoutInflater.from(this@ConverterActivity)
+                    .inflate(R.layout.item_branch, parent, false)
+                val b = list[position]
+                view.findViewById<TextView>(R.id.branchAddress).text = b.address
+                view.findViewById<TextView>(R.id.branchRates).text = branchRatesText(b, side, value)
+                return view
             }
-        }.toTypedArray()
+        }
         AlertDialog.Builder(this)
-            .setCustomTitle(dialogTitle(title))
-            .setItems(items) { _, which -> openMap(list[which].address) }
+            .setCustomTitle(branchesTitle(bank.name, subtitle))
+            .setAdapter(adapter) { _, which -> openMap(list[which].address) }
             .setNegativeButton(R.string.close, null)
             .show()
+    }
+
+    /** «Покупка 3.255 · Продажа 3.315 · 23:11» — выбранный курс зелёным. */
+    private fun branchRatesText(b: Branch, side: Side, value: BigDecimal): CharSequence {
+        val out = android.text.SpannableStringBuilder()
+        fun part(label: Int, partSide: Side, v: BigDecimal?) {
+            val start = out.length
+            out.append(getString(label)).append(' ').append(v?.let(Money::formatBankRate) ?: "—")
+            if (partSide == side && v != null && v.compareTo(value) == 0) {
+                out.setSpan(
+                    android.text.style.ForegroundColorSpan(getColor(R.color.best)),
+                    start, out.length, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
+                )
+                out.setSpan(
+                    android.text.style.StyleSpan(Typeface.BOLD),
+                    start, out.length, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
+                )
+            }
+        }
+        part(R.string.range_buy, Side.BUY, b.quote.buy)
+        out.append("   ")
+        part(R.string.range_sell, Side.SELL, b.quote.sell)
+        if (b.time.isNotEmpty()) out.append("   ").append(b.time)
+        return out
+    }
+
+    /** Заголовок списка отделений: банк крупно, курс и подсказка мельче. */
+    private fun branchesTitle(bankName: String, subtitle: String): View {
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(pad, pad, pad, pad / 2)
+            addView(TextView(context).apply {
+                text = bankName
+                textSize = 20f
+                setTypeface(null, Typeface.BOLD)
+                setTextColor(getColor(R.color.text_primary))
+            })
+            addView(TextView(context).apply {
+                text = subtitle
+                textSize = 15f
+                setTextColor(getColor(R.color.text_primary))
+                setPadding(0, pad / 4, 0, 0)
+            })
+            addView(TextView(context).apply {
+                setText(R.string.branches_hint)
+                textSize = 13f
+                setTextColor(getColor(R.color.text_secondary))
+                setPadding(0, pad / 4, 0, 0)
+            })
+        }
     }
 
     /** Заголовок диалога в несколько строк (стандартный обрезается до одной). */
