@@ -61,7 +61,17 @@
     <string name="range_sell">Продажа</string>
     <string name="banks_loading">Загружаю курсы банков…</string>
     <string name="banks_unavailable">Курсы банков недоступны — проверьте интернет и нажмите «Обновить».</string>
-    <string name="banks_footer">Источник: %1$s · обновлено %2$s. Лучшие курсы выделены зелёным. Нажмите на банк, чтобы считать по его курсу.</string>
+    <string name="banks_footer">Источник: %1$s · обновлено %2$s. Лучшие курсы выделены зелёным. Нажмите на курс — покажу адреса отделений, на название банка — считать по его курсу.</string>
     <string name="banks_footer_offline">нет связи</string>
     <string name="bank_rate_missing">нет курса</string>
+    <string name="branches_title">%1$s · %2$s\nОтделений: %3$d — нажмите на адрес, чтобы открыть карту</string>
+    <string name="branches_title_all">%1$s · все отделения (%2$d)\nНажмите на адрес, чтобы открыть карту</string>
+    <string name="branches_unknown">Адреса отделений с курсом «%1$s» недоступны для этого источника курсов.</string>
+    <string name="close">Закрыть</string>
+    <string name="no_map_app">Не найдено приложение карт</string>
+    <string name="desc_info">Инструкция и о приложении</string>
+    <string name="about_title">Инструкция</string>
+    <string name="about_version">Версия %1$s</string>
+    <string name="about_developer">Разработчик: Mikhail Pipchanka</string>
+    <string name="about_footer">© Mikhail Pipchanka</string>
 </resources>

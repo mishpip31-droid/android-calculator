@@ -15,7 +15,9 @@ class BankRatesTest {
         <tr class="currencies-courses__row-main " data-row-type="default" data-currencies-courses-bank-id="6" id="bank-row-14" data-bank-sef-alias="alfabank"><td class="pos-r"><span><span class="bank-logo"><img class="load_image" src="/x.svg" alt="Альфа Банк" data-url-img="a.svg"></span> Альфа Банк </span></td><td class="currencies-courses__currency-cell "><span>2.935</span></td><td class="currencies-courses__currency-cell "><span>2.975</span></td><td class="currencies-courses__icon-cell"><span class="currencies-courses__pin"> 32 </span></td></tr>
         <tr class="currencies-courses__row-additional" id="filial-row-14" data-bank-sef-alias="alfabank"><td colspan="4"><table><tbody>
         <tr class="currencies-courses__custom-row currencies-courses__row-main currencies-courses__row-main--filial" data-bank-sef-alias="alfabank"><td colspan="4"></td></tr>
-        <tr data-bank-sef-alias="alfabank"><td>г. Минск</td><td class="currencies-courses__currency-cell "><span>2.9</span></td><td class="currencies-courses__currency-cell "><span>3.1</span></td></tr>
+        <tr data-bank-sef-alias="alfabank" data-has-appointment="0" class=""><td><a class="currencies-courses__branch-name" href="/bank/alfabank/department/204"> г. Минск, тр. Логойский, 10 </a><div class="light-gray fs-14"><i class="ic-update-time mr-5"></i> 22:33 </div></td><td class="currencies-courses__currency-cell "><span>2.935</span><div class="currencies-courses__calc-container"><i class="ic-calc rate_buy" data-currency="USD" ></i></div></td><td class="currencies-courses__currency-cell "><span>2.975</span><div><i class="ic-calc rate_sell"></i></div></td><td></td></tr>
+        <tr data-bank-sef-alias="alfabank" data-has-appointment="0" class=""><td><a class="currencies-courses__branch-name" href="/bank/alfabank/department/205"> г. Минск, ул. Сурганова, 43 &amp; ТЦ </a><div class="light-gray fs-14"><i class="ic-update-time mr-5"></i> 21:10 </div></td><td class="currencies-courses__currency-cell "><span>2.92</span></td><td class="currencies-courses__currency-cell "><span>2.99</span></td><td></td></tr>
+        <tr data-bank-sef-alias="alfabank" data-has-appointment="0" class=""><td><a class="currencies-courses__branch-name" href="/x"> г. Минск, тр. Логойский, 10 </a></td><td class="currencies-courses__currency-cell "><span>2.935</span></td><td class="currencies-courses__currency-cell "><span>2.975</span></td></tr>
         </tbody></table></td></tr>
         <tr class="currencies-courses__row-main " data-row-type="default" data-bank-sef-alias="mtbank"><td><img alt="МТбанк"></td><td class="currencies-courses__currency-cell "><span class="best accent tooltip-click" title="Лучший курс">2.94</span></td><td class="currencies-courses__currency-cell "><span class="best accent">2.948</span></td></tr>
         <tr class="currencies-courses__row-main " data-row-type="default" data-bank-sef-alias="rrb-bank"><td><img alt="Банк РРБ"></td><td class="currencies-courses__currency-cell "><span>-</span></td><td class="currencies-courses__currency-cell "><span>2.95</span></td></tr>
@@ -34,12 +36,12 @@ class BankRatesTest {
     @Test fun parsesMyfinSkippingAdsAndBranches() {
         val usd = BankRatesParser.parseMyfin(myfinUsd)
         assertEquals(listOf("alfabank", "mtbank", "rrb-bank", "tkbank"), usd.keys.toList())
-        assertEquals("Альфа Банк", usd.getValue("alfabank").first)
-        assertEquals(BankQuote(bd("2.935"), bd("2.975")), usd.getValue("alfabank").second)
-        assertEquals(BankQuote(bd("2.94"), bd("2.948")), usd.getValue("mtbank").second)
-        assertEquals(BankQuote(null, bd("2.95")), usd.getValue("rrb-bank").second)
-        assertEquals("ТК \"Банк\"", usd.getValue("tkbank").first)
-        assertEquals(bd("2.98"), usd.getValue("tkbank").second.sell)
+        assertEquals("Альфа Банк", usd.getValue("alfabank").name)
+        assertEquals(BankQuote(bd("2.935"), bd("2.975")), usd.getValue("alfabank").quote)
+        assertEquals(BankQuote(bd("2.94"), bd("2.948")), usd.getValue("mtbank").quote)
+        assertEquals(BankQuote(null, bd("2.95")), usd.getValue("rrb-bank").quote)
+        assertEquals("ТК \"Банк\"", usd.getValue("tkbank").name)
+        assertEquals(bd("2.98"), usd.getValue("tkbank").quote.sell)
     }
 
     @Test fun mergesUsdAndEur() {
@@ -134,5 +136,36 @@ class BankRatesTest {
         assertEquals("2.935", Money.formatBankRate(bd("2.9350")))
         assertEquals("3.30", Money.formatBankRate(bd("3.3")))
         assertEquals("3.00", Money.formatBankRate(bd("3.000000")))
+    }
+
+    @Test fun parsesBranchesWithAddresses() {
+        val alfa = BankRatesParser.parseMyfin(myfinUsd).getValue("alfabank")
+        assertEquals(2, alfa.branches.size) // дубликат адреса отброшен
+        val first = alfa.branches[0]
+        assertEquals("г. Минск, тр. Логойский, 10", first.address)
+        assertEquals("22:33", first.time)
+        assertEquals(BankQuote(bd("2.935"), bd("2.975")), first.quote)
+        assertEquals("г. Минск, ул. Сурганова, 43 & ТЦ", alfa.branches[1].address)
+        assertTrue(BankRatesParser.parseMyfin(myfinUsd).getValue("mtbank").branches.isEmpty())
+    }
+
+    @Test fun branchesWithGivenRate() {
+        val alfa = sampleRates().bank("alfabank")!!
+        val best = alfa.branchesWith(Currency.USD, Side.SELL, bd("2.975"))
+        assertEquals(listOf("г. Минск, тр. Логойский, 10"), best.map { it.address })
+        assertEquals(1, alfa.branchesWith(Currency.USD, Side.BUY, bd("2.92")).size)
+        assertTrue(alfa.branchesWith(Currency.EUR, Side.BUY, bd("3.275")).isEmpty())
+    }
+
+    @Test fun belarusbankBranches() {
+        val json = """[
+            {"kurs_date_time":"2026-10-30 16:00:00","USD_in":"2.9350","USD_out":"2.9850","EUR_in":"0","EUR_out":"0",
+             "name_type":"г.","name":"Минск","street_type":"ул. ","street":"Ольшевского","home_number":"1/3"}
+        ]"""
+        val bank = BankRatesParser.parseBelarusbank(json)!!
+        val b = bank.branches.getValue(Currency.USD).single()
+        assertEquals("г. Минск, ул. Ольшевского, 1/3", b.address)
+        assertEquals("16:00", b.time)
+        assertNull(bank.branches[Currency.EUR])
     }
 }

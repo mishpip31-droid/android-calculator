@@ -164,6 +164,11 @@ class MainActivity : Activity() {
             override fun onScroll(view: android.widget.AbsListView, first: Int, visible: Int, total: Int) {}
         })
 
+        findViewById<View>(R.id.btnInfo).setOnClickListener {
+            it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            startActivity(Intent(this, AboutActivity::class.java))
+        }
+
         converterButton.setOnClickListener {
             it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
             openConverter()
@@ -386,6 +391,7 @@ class MainActivity : Activity() {
         historyList.visibility = if (historyExpanded) View.GONE else View.VISIBLE
         searchBar.visibility = if (historyExpanded && !empty) View.VISIBLE else View.INVISIBLE
         converterButton.visibility = if (historyExpanded) View.GONE else View.VISIBLE
+        findViewById<View>(R.id.btnInfo).visibility = if (historyExpanded) View.GONE else View.VISIBLE
         refreshTiles()
         clearHistory.visibility = if (historyExpanded && !empty) View.VISIBLE else View.GONE
         toggleHistory.setImageResource(if (historyExpanded) R.drawable.ic_keypad else R.drawable.ic_history)

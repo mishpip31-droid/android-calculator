@@ -31,7 +31,9 @@ jobs:
             echo "== $u"; curl -sS -m 15 "$u" | head -c 400; echo
           done
           for u in "https://myfin.by/currency/usd" "https://myfin.by/currency/eur"; do
-            echo "== $u bank rows:"; curl -sS -L -m 30 -A "Mozilla/5.0 (Linux; Android) Calculator" "$u" | grep -o 'data-row-type="default"' | wc -l
+            curl -sS -L -m 30 -A "Mozilla/5.0 (Linux; Android) Calculator" -o page.html "$u" || true
+            echo "== $u bank rows: $(grep -o 'data-row-type="default"' page.html | wc -l), branch addresses: $(grep -o 'currencies-courses__branch-name' page.html | wc -l)"
+            grep -o 'currencies-courses__branch-name"[^>]*>[^<]*' page.html | head -3
           done
           echo "== belarusbank"; curl -sS -m 20 "https://belarusbank.by/api/kursExchange?city=%D0%9C%D0%B8%D0%BD%D1%81%D0%BA" | head -c 200; echo
 

@@ -89,6 +89,14 @@
             android:textSize="15sp" />
 
         <ImageButton
+            android:id="@+id/btnInfo"
+            android:layout_width="44dp"
+            android:layout_height="48dp"
+            android:background="@drawable/icon_button_bg"
+            android:contentDescription="@string/desc_info"
+            android:src="@drawable/ic_info" />
+
+        <ImageButton
             android:id="@+id/btnClearHistory"
             android:layout_width="48dp"
             android:layout_height="48dp"

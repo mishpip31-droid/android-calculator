@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/icon_button_bg"
+            android:contentDescription="@string/desc_back"
+            android:src="@drawable/ic_back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:text="@string/about_title"
+            android:textColor="@color/text_primary"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="24dp">
+
+            <!-- О приложении и разработчике -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/card_static_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:importantForAccessibility="no"
+                    android:src="@mipmap/ic_launcher" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_name"
+                        android:textColor="@color/text_primary"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/aboutVersion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/about_developer"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                style="@style/AboutHeading"
+                android:text="Калькулятор" />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Набирайте выражение кнопками — результат появляется серым под ним сразу, ещё до «=»." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• «=» — посчитать. Следующая цифра начнёт новый пример, а знак действия (+ − × ÷) продолжит считать с результатом." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• ( ) — одна кнопка для скобок: сама открывает или закрывает. Незакрытые скобки закроются при «=»." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• % — процент: 200 × 15% = 30." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• ⌫ стирает один символ, долгое нажатие на ⌫ — очищает всё. C — очистить." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Можно умножать на отрицательное: 5 × −2." />
+
+            <TextView
+                style="@style/AboutHeading"
+                android:text="История" />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Прошлые вычисления видны над примером, новые — снизу." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Нажмите на запись — её результат вставится в пример. Если вы как раз набирали число, оно заменится." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Удерживайте запись — меню: вставить результат или всё выражение, заметка, копировать, удалить." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Кнопка 🕘 (слева сверху) — вся история плитками на весь экран. Вернуться — кнопка клавиатуры или «Назад»." />
+
+            <TextView
+                style="@style/AboutHeading"
+                android:text="Заметки и поиск" />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Удерживайте запись → «Добавить заметку», например «аренда». Заметка видна над вычислением." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Записи с заметками хранятся всегда. Без заметок хранятся последние 200, более старые удаляются сами." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• В истории плитками сверху есть поиск — по заметке или числу. Кнопка «★ Заметки» оставляет только записи с заметками." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Корзина в истории удаляет только записи без заметок. «Удалить всё» — вместе с заметками (спросит ещё раз)." />
+
+            <TextView
+                style="@style/AboutHeading"
+                android:text="Конвертер валют" />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Кнопка «Валюты» на главном экране. Введите сумму в любой строке (BYN, USD, EUR, BTC) — остальные пересчитаются." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Число с экрана калькулятора подставляется само. «В калькулятор» — вернуть сумму из строки, где стоит курсор." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Официальный курс — Нацбанк Беларуси. Биткоин — мировая цена в долларах, пересчитанная по курсу доллара." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• ⟳ — обновить курсы. Без интернета используются последние сохранённые." />
+
+            <TextView
+                style="@style/AboutHeading"
+                android:text="Курсы банков" />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Кнопка «Курс: …» — выбрать, по какому курсу считать: НБРБ, лучший в банках или конкретный банк." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Для банка выберите «Покупаю валюту» (курс продажи банка) или «Продаю валюту» (курс покупки банка)." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Ниже — таблица банков Минска: покупка и продажа USD или EUR, минимум и максимум. Лучшие курсы — зелёные." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Нажмите на курс в таблице — откроются адреса отделений с этим курсом, нажатие на адрес покажет его на карте." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Нажмите на название банка — конвертер будет считать по его курсу." />
+
+            <TextView
+                style="@style/AboutHeading"
+                android:text="Откуда данные" />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Официальные курсы — Национальный банк Республики Беларусь (nbrb.by)." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Биткоин — CoinGecko (запасные: Coinbase, Binance)." />
+
+            <TextView
+                style="@style/AboutItem"
+                android:text="• Курсы банков и адреса отделений — myfin.by; запасной вариант — открытые API Беларусбанка и Альфа-Банка. Перед обменом уточняйте курс в банке." />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:gravity="center"
+                android:text="@string/about_footer"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

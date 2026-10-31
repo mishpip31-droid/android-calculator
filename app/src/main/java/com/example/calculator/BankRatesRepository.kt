@@ -27,14 +27,17 @@ class BankRatesRepository(context: Context) {
                     val b = banks.getJSONObject(i)
                     val q = b.getJSONObject("q")
                     val quotes = linkedMapOf<Currency, BankQuote>()
+                    val branches = linkedMapOf<Currency, List<Branch>>()
+                    val br = b.optJSONObject("br")
                     for (c in listOf(Currency.USD, Currency.EUR)) {
-                        val cq = q.optJSONObject(c.name) ?: continue
-                        quotes[c] = BankQuote(
-                            cq.optString("b").takeIf { it.isNotEmpty() }?.let(::BigDecimal),
-                            cq.optString("s").takeIf { it.isNotEmpty() }?.let(::BigDecimal),
-                        )
+                        q.optJSONObject(c.name)?.let { quotes[c] = readQuote(it) }
+                        val arr = br?.optJSONArray(c.name) ?: continue
+                        branches[c] = (0 until arr.length()).map { j ->
+                            val o = arr.getJSONObject(j)
+                            Branch(o.getString("a"), readQuote(o), o.optString("t"))
+                        }
                     }
-                    Bank(b.getString("id"), b.getString("name"), quotes)
+                    Bank(b.getString("id"), b.getString("name"), quotes, branches)
                 },
                 source = o.getString("source"),
                 updatedAt = o.getLong("t"),
@@ -42,6 +45,17 @@ class BankRatesRepository(context: Context) {
         } catch (e: Exception) {
             null
         }
+    }
+
+    private fun readQuote(o: JSONObject) = BankQuote(
+        o.optString("b").takeIf { it.isNotEmpty() }?.let(::BigDecimal),
+        o.optString("s").takeIf { it.isNotEmpty() }?.let(::BigDecimal),
+    )
+
+    private fun writeQuote(o: JSONObject, quote: BankQuote): JSONObject {
+        quote.buy?.let { o.put("b", it.toPlainString()) }
+        quote.sell?.let { o.put("s", it.toPlainString()) }
+        return o
     }
 
     /** Блокирующая загрузка — вызывать не из главного потока. */
@@ -82,13 +96,16 @@ class BankRatesRepository(context: Context) {
         val banks = JSONArray()
         for (b in rates.banks) {
             val q = JSONObject()
-            for ((c, quote) in b.quotes) {
-                val cq = JSONObject()
-                quote.buy?.let { cq.put("b", it.toPlainString()) }
-                quote.sell?.let { cq.put("s", it.toPlainString()) }
-                q.put(c.name, cq)
+            for ((c, quote) in b.quotes) q.put(c.name, writeQuote(JSONObject(), quote))
+            val br = JSONObject()
+            for ((c, list) in b.branches) {
+                val arr = JSONArray()
+                for (branch in list) {
+                    arr.put(writeQuote(JSONObject().put("a", branch.address).put("t", branch.time), branch.quote))
+                }
+                br.put(c.name, arr)
             }
-            banks.put(JSONObject().put("id", b.id).put("name", b.name).put("q", q))
+            banks.put(JSONObject().put("id", b.id).put("name", b.name).put("q", q).put("br", br))
         }
         val o = JSONObject().put("banks", banks).put("source", rates.source).put("t", rates.updatedAt)
         prefs.edit().putString(KEY, o.toString()).apply()

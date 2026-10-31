@@ -324,15 +324,20 @@ class ConverterActivity : Activity() {
             val q = bank.quotes[c] ?: continue
             val row = LayoutInflater.from(this).inflate(R.layout.item_bank_row, bankTable, false)
             row.findViewById<TextView>(R.id.bankName).text = bank.name
-            fun cell(id: Int, value: BigDecimal?, best: BigDecimal?) {
+            fun cell(id: Int, cellSide: Side, value: BigDecimal?, best: BigDecimal?) {
                 val tv = row.findViewById<TextView>(id)
                 tv.text = value?.let(Money::formatBankRate) ?: "—"
                 val isBest = value != null && best != null && value.compareTo(best) == 0
                 tv.setTextColor(if (isBest) bestColor else primary)
                 tv.setTypeface(null, if (isBest) Typeface.BOLD else Typeface.NORMAL)
+                // Нажатие на курс — адреса отделений, где он сейчас действует.
+                if (value != null) {
+                    tv.setBackgroundResource(R.drawable.history_item_bg)
+                    tv.setOnClickListener { showBranches(bank, c, cellSide, value) }
+                }
             }
-            cell(R.id.bankBuy, q.buy, bestBuy)
-            cell(R.id.bankSell, q.sell, bestSell)
+            cell(R.id.bankBuy, Side.BUY, q.buy, bestBuy)
+            cell(R.id.bankSell, Side.SELL, q.sell, bestSell)
             if (bank.id == sourceId) row.setBackgroundResource(R.drawable.selected_row_bg)
             row.setOnClickListener { selectSource(bank.id) }
             bankTable.addView(row)
@@ -367,6 +372,77 @@ class ConverterActivity : Activity() {
         out.append(" · ")
         part("макс", ext.max, highlight = bestIsMax)
         return out
+    }
+
+    /** Список отделений банка с этим курсом; нажатие на адрес открывает карту. */
+    private fun showBranches(bank: Bank, c: Currency, side: Side, value: BigDecimal) {
+        val all = bank.branches[c].orEmpty()
+        val matching = bank.branchesWith(c, side, value)
+        val sideName = getString(if (side == Side.BUY) R.string.range_buy else R.string.range_sell).lowercase()
+        val rateText = "$sideName ${c.name} ${Money.formatBankRate(value)}"
+        if (all.isEmpty()) {
+            AlertDialog.Builder(this)
+                .setTitle(bank.name)
+                .setMessage(getString(R.string.branches_unknown, rateText))
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+            return
+        }
+        // Если точного совпадения нет (курс могли обновить) — все отделения, лучшие сверху.
+        val list = matching.ifEmpty {
+            all.sortedWith(
+                compareBy<Branch, BigDecimal?>(nullsLast<BigDecimal>()) { it.quote.get(side) }
+                    .let { if (side == Side.BUY) it.reversed() else it },
+            )
+        }
+        val title = if (matching.isNotEmpty()) {
+            getString(R.string.branches_title, bank.name, rateText, matching.size)
+        } else {
+            getString(R.string.branches_title_all, bank.name, all.size)
+        }
+        val items = list.map<Branch, CharSequence> { b ->
+            buildString {
+                append(b.address)
+                append("\n")
+                append(getString(R.string.range_buy)).append(' ')
+                append(b.quote.buy?.let(Money::formatBankRate) ?: "—")
+                append(" · ").append(getString(R.string.range_sell)).append(' ')
+                append(b.quote.sell?.let(Money::formatBankRate) ?: "—")
+                if (b.time.isNotEmpty()) append(" · ").append(b.time)
+            }
+        }.toTypedArray()
+        AlertDialog.Builder(this)
+            .setCustomTitle(dialogTitle(title))
+            .setItems(items) { _, which -> openMap(list[which].address) }
+            .setNegativeButton(R.string.close, null)
+            .show()
+    }
+
+    /** Заголовок диалога в несколько строк (стандартный обрезается до одной). */
+    private fun dialogTitle(text: String): TextView {
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        return TextView(this).apply {
+            this.text = text
+            setPadding(pad, pad, pad, pad / 2)
+            textSize = 17f
+            setTextColor(getColor(R.color.text_primary))
+        }
+    }
+
+    private fun openMap(address: String) {
+        val query = if (address.contains("Минск", ignoreCase = true)) address else "Минск, $address"
+        val geo = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("geo:0,0?q=" + android.net.Uri.encode(query)))
+        try {
+            startActivity(geo)
+        } catch (e: android.content.ActivityNotFoundException) {
+            // Нет приложения карт — открываем Яндекс Карты в браузере.
+            val web = android.net.Uri.parse("https://yandex.by/maps/?text=" + android.net.Uri.encode(query))
+            try {
+                startActivity(Intent(Intent.ACTION_VIEW, web))
+            } catch (e2: android.content.ActivityNotFoundException) {
+                Toast.makeText(this, R.string.no_map_app, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun bankNames(names: List<String>) =
