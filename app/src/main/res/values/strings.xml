@@ -113,10 +113,11 @@
     <string name="delete">Удалить</string>
     <string name="undo">Отменить</string>
     <string name="swipe_delete">Удалить</string>
-    <string name="theme_title">Праздничные темы</string>
-    <string name="theme_auto">Автоматически по календарю</string>
-    <string name="theme_off">Без праздничных тем</string>
-    <string name="themes_button">🎨 Праздничные темы</string>
+    <string name="appearance_title">Оформление</string>
+    <string name="appearance_system">Как в системе (по умолчанию)</string>
+    <string name="appearance_light">Светлая</string>
+    <string name="appearance_dark">Тёмная</string>
+    <string name="appearance_button">🎨 Оформление</string>
     <string name="quick_sum_title">Быстрая сумма</string>
     <string name="desc_quick_sum">Быстрая сумма: сложить числа лентой</string>
     <string name="quick_sum_total_label">Итого</string>

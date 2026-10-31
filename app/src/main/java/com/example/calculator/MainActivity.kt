@@ -92,27 +92,8 @@ class MainActivity : ThemedActivity() {
         render()
         historyList.setSelection(history.size - 1)
         if (savedInstanceState == null) handleInsert(intent)
-        setupHoliday(firstOpen = savedInstanceState == null)
     }
 
-    /** Праздничная тема: поздравление вверху и падающие эмодзи при открытии. */
-    private fun setupHoliday(firstOpen: Boolean) {
-        val banner = findViewById<TextView>(R.id.holidayBanner)
-        val particles = findViewById<ParticlesView>(R.id.particles)
-        val h = holiday
-        if (h == null) {
-            banner.visibility = View.GONE
-            return
-        }
-        banner.visibility = View.VISIBLE
-        banner.text = h.greeting(Day.today())
-        banner.setOnClickListener { ThemeManager.showPicker(this) }
-        banner.setOnLongClickListener {
-            particles.start(h.emoji)
-            true
-        }
-        if (firstOpen) particles.post { particles.start(h.emoji) }
-    }
 
     /** Возврат из списка покупок: «В калькулятор» вставляет итог в выражение. */
     override fun onNewIntent(intent: Intent) {

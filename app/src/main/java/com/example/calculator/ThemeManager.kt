@@ -6,68 +6,47 @@ import android.content.Context
 import android.os.Bundle
 import android.util.TypedValue
 
-/** Цвет из текущей темы (праздничной или обычной). */
+/** Цвет из текущей темы оформления. */
 fun Context.themeColor(attr: Int): Int {
     val tv = TypedValue()
     theme.resolveAttribute(attr, tv, true)
     return if (tv.resourceId != 0) getColor(tv.resourceId) else tv.data
 }
 
-/** Выбор праздничной темы: автоматически по календарю, выключено или конкретная. */
+/** Оформление: как в системе (по умолчанию), всегда светлое или всегда тёмное. */
 object ThemeManager {
-    const val AUTO = "auto"
-    const val OFF = "off"
-    private const val PREFS = "theme"
+    const val SYSTEM = "system"
+    const val LIGHT = "light"
+    const val DARK = "dark"
+    private const val PREFS = "appearance"
     private const val KEY = "mode"
 
-    fun mode(context: Context): String =
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, AUTO) ?: AUTO
+    fun mode(context: Context): String {
+        val m = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, SYSTEM)
+        return if (m == LIGHT || m == DARK) m else SYSTEM
+    }
 
     fun setMode(context: Context, mode: String) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY, mode).apply()
     }
 
-    fun current(context: Context, today: Day = Day.today()): Holiday? = when (val m = mode(context)) {
-        OFF -> null
-        AUTO -> Holidays.forDate(today)
-        else -> Holidays.byId(m)
-    }
-
-    fun style(holiday: Holiday?): Int = when (holiday?.id) {
-        "new_year" -> R.style.Holiday_NewYear
-        "christmas" -> R.style.Holiday_Christmas
-        "valentine" -> R.style.Holiday_Valentine
-        "defender" -> R.style.Holiday_Defender
-        "maslenitsa" -> R.style.Holiday_Maslenitsa
-        "womens_day" -> R.style.Holiday_WomensDay
-        "easter" -> R.style.Holiday_Easter
-        "labour_day" -> R.style.Holiday_LabourDay
-        "victory_day" -> R.style.Holiday_VictoryDay
-        "independence" -> R.style.Holiday_Independence
-        "kupalle" -> R.style.Holiday_Kupalle
-        "knowledge" -> R.style.Holiday_Knowledge
-        "mothers_day" -> R.style.Holiday_MothersDay
-        "halloween" -> R.style.Holiday_Halloween
+    fun style(mode: String): Int = when (mode) {
+        LIGHT -> R.style.AppTheme_ForcedLight
+        DARK -> R.style.AppTheme_ForcedDark
         else -> R.style.AppTheme
     }
 
-    /** Диалог выбора темы; после выбора экран перерисовывается. */
+    /** Диалог выбора оформления; после выбора экран перерисовывается. */
     fun showPicker(activity: Activity) {
-        val modes = ArrayList<String>()
-        val labels = ArrayList<String>()
-        val today = Holidays.forDate(Day.today())
-        modes += AUTO
-        labels += activity.getString(R.string.theme_auto) +
-            (today?.let { " — ${it.emoji.first()} ${it.title}" } ?: "")
-        modes += OFF
-        labels += activity.getString(R.string.theme_off)
-        for (h in Holidays.all) {
-            modes += h.id
-            labels += "${h.emoji.first()}  ${h.title}  ·  ${h.dates}"
-        }
+        val modes = arrayOf(SYSTEM, LIGHT, DARK)
+        val labels = arrayOf(
+            activity.getString(R.string.appearance_system),
+            activity.getString(R.string.appearance_light),
+            activity.getString(R.string.appearance_dark),
+        )
         AlertDialog.Builder(activity)
-            .setTitle(R.string.theme_title)
-            .setSingleChoiceItems(labels.toTypedArray(), modes.indexOf(mode(activity)).coerceAtLeast(0)) { d, which ->
+            .setTitle(R.string.appearance_title)
+            .setSingleChoiceItems(labels, modes.indexOf(mode(activity)).coerceAtLeast(0)) { d, which ->
                 setMode(activity, modes[which])
                 d.dismiss()
                 activity.recreate()
@@ -77,20 +56,19 @@ object ThemeManager {
     }
 }
 
-/** Базовый экран: применяет праздничную тему и обновляется, если она сменилась. */
+/** Базовый экран: применяет выбранное оформление и обновляется, если его сменили. */
 open class ThemedActivity : Activity() {
-    protected var holiday: Holiday? = null
-        private set
+    private var appliedMode = ThemeManager.SYSTEM
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        holiday = ThemeManager.current(this)
-        setTheme(ThemeManager.style(holiday))
+        appliedMode = ThemeManager.mode(this)
+        setTheme(ThemeManager.style(appliedMode))
         super.onCreate(savedInstanceState)
     }
 
     override fun onResume() {
         super.onResume()
-        // Сменили тему на другом экране или наступил праздник — перерисовываемся.
-        if (ThemeManager.current(this)?.id != holiday?.id) recreate()
+        // Оформление сменили на другом экране — перерисовываемся.
+        if (ThemeManager.mode(this) != appliedMode) recreate()
     }
 }

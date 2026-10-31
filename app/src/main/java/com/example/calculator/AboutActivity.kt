@@ -11,7 +11,7 @@ class AboutActivity : ThemedActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
         findViewById<View>(R.id.btnBack).setOnClickListener { finish() }
-        findViewById<View>(R.id.btnThemes).setOnClickListener { ThemeManager.showPicker(this) }
+        findViewById<View>(R.id.btnAppearance).setOnClickListener { ThemeManager.showPicker(this) }
         findViewById<View>(R.id.btnPrivacy).setOnClickListener {
             startActivity(android.content.Intent(this, PrivacyActivity::class.java))
         }

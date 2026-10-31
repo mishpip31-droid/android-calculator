@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Оформление, выбранное вручную (по умолчанию — AppTheme, как в системе) -->
+    <style name="AppTheme.ForcedLight" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">?attr/c_background</item>
+        <item name="android:statusBarColor">?attr/c_background</item>
+        <item name="android:navigationBarColor">?attr/c_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="c_background">#FFF7F7FA</item>
+        <item name="c_text_primary">#FF1B1B1F</item>
+        <item name="c_text_secondary">#FF6B6B74</item>
+        <item name="c_error">#FFD32F2F</item>
+        <item name="c_btn_digit">#FFFFFFFF</item>
+        <item name="c_btn_func">#FFE3E3EA</item>
+        <item name="c_btn_op">#FFDCE6FF</item>
+        <item name="c_btn_op_text">#FF2F5BD3</item>
+        <item name="c_btn_equals">#FF2F5BD3</item>
+        <item name="c_btn_equals_text">#FFFFFFFF</item>
+        <item name="c_ripple">#33000000</item>
+        <item name="c_accent">#FF2F5BD3</item>
+        <item name="c_card">#FFFFFFFF</item>
+        <item name="c_best">#FF2E7D32</item>
+        <item name="c_divider">#1F000000</item>
+        <item name="c_undo_bg">#FF2B2B30</item>
+        <item name="c_undo_text">#FFF2F2F5</item>
+        <item name="c_undo_action">#FF8AB4FF</item>
+        <item name="c_danger">#FFE53935</item>
+    </style>
+    <style name="AppTheme.ForcedDark" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">?attr/c_background</item>
+        <item name="android:statusBarColor">?attr/c_background</item>
+        <item name="android:navigationBarColor">?attr/c_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="c_background">#FF121214</item>
+        <item name="c_text_primary">#FFF2F2F5</item>
+        <item name="c_text_secondary">#FF9A9AA4</item>
+        <item name="c_error">#FFFF6B6B</item>
+        <item name="c_btn_digit">#FF232327</item>
+        <item name="c_btn_func">#FF34343A</item>
+        <item name="c_btn_op">#FF22305A</item>
+        <item name="c_btn_op_text">#FFA9C1FF</item>
+        <item name="c_btn_equals">#FF7FA2FF</item>
+        <item name="c_btn_equals_text">#FF0B1330</item>
+        <item name="c_ripple">#33FFFFFF</item>
+        <item name="c_accent">#FFA9C1FF</item>
+        <item name="c_card">#FF1E1E22</item>
+        <item name="c_best">#FF81C784</item>
+        <item name="c_divider">#33FFFFFF</item>
+        <item name="c_undo_bg">#FFE6E6EA</item>
+        <item name="c_undo_text">#FF1B1B1F</item>
+        <item name="c_undo_action">#FF2F5BD3</item>
+        <item name="c_danger">#FFEF5350</item>
+    </style>
+</resources>

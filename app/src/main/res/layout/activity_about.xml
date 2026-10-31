@@ -269,19 +269,11 @@
 
             <TextView
                 style="@style/AboutHeading"
-                android:text="Праздничные темы" />
+                android:text="Оформление" />
 
             <TextView
                 style="@style/AboutItem"
-                android:text="• В праздники приложение само меняет оформление: Новый год, Рождество, 14 февраля, 23 февраля, Масленица, 8 Марта, Пасха, 1 Мая, 9 Мая, 3 июля, Купалье, 1 сентября, День матери, Хэллоуин." />
-
-            <TextView
-                style="@style/AboutItem"
-                android:text="• Вверху появляется поздравление, а при открытии падают снежинки, сердечки, цветы… Удерживайте поздравление — анимация повторится." />
-
-            <TextView
-                style="@style/AboutItem"
-                android:text="• Нажмите на поздравление или кнопку «Праздничные темы» ниже: можно выбрать «Автоматически», выключить темы или включить любую тему вручную." />
+                android:text="• Кнопка «Оформление» ниже: «Как в системе» (по умолчанию — светлая или тёмная вслед за настройкой телефона), «Светлая» или «Тёмная»." />
 
             <TextView
                 style="@style/AboutHeading"
@@ -300,7 +292,7 @@
                 android:text="• Курсы банков и адреса отделений — myfin.by; запасной вариант — открытые API Беларусбанка и Альфа-Банка. Перед обменом уточняйте курс в банке." />
 
             <TextView
-                android:id="@+id/btnThemes"
+                android:id="@+id/btnAppearance"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="24dp"
@@ -308,7 +300,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:text="@string/themes_button"
+                android:text="@string/appearance_button"
                 android:textColor="?attr/c_btn_op_text"
                 android:textSize="16sp" />
 

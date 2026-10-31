@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-<LinearLayout
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
@@ -11,27 +7,6 @@
     android:paddingStart="12dp"
     android:paddingEnd="12dp"
     android:paddingBottom="12dp">
-
-    <!-- Праздничное поздравление: нажатие — выбор темы -->
-    <TextView
-        android:id="@+id/holidayBanner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/pill_bg"
-        android:clickable="true"
-        android:ellipsize="end"
-        android:focusable="true"
-        android:gravity="center"
-        android:maxLines="1"
-        android:paddingStart="12dp"
-        android:paddingTop="6dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="6dp"
-        android:textColor="?attr/c_btn_op_text"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        android:visibility="gone" />
 
     <!-- Панель: история / очистка истории -->
     <LinearLayout
@@ -358,10 +333,3 @@
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
-
-<!-- Падающие эмодзи поверх всего, не перехватывают нажатия -->
-<com.example.calculator.ParticlesView
-    android:id="@+id/particles"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
-</FrameLayout>
