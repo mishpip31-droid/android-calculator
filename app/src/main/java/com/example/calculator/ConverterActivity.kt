@@ -381,10 +381,16 @@ class ConverterActivity : Activity() {
         val sideName = getString(if (side == Side.BUY) R.string.range_buy else R.string.range_sell).lowercase()
         val rateText = "$sideName ${c.name} ${Money.formatBankRate(value)}"
         if (all.isEmpty()) {
+            if (loadingBanks) {
+                Toast.makeText(this, R.string.branches_loading, Toast.LENGTH_SHORT).show()
+                return
+            }
+            // Часто это курс в мобильном приложении банка — отделений у него нет.
             AlertDialog.Builder(this)
-                .setTitle(bank.name)
-                .setMessage(getString(R.string.branches_unknown, rateText))
-                .setPositiveButton(android.R.string.ok, null)
+                .setCustomTitle(dialogTitle("${bank.name} · $rateText"))
+                .setMessage(R.string.branches_none)
+                .setPositiveButton(R.string.find_on_map) { _, _ -> openMap(bank.name) }
+                .setNegativeButton(R.string.close, null)
                 .show()
             return
         }

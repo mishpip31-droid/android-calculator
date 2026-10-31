@@ -66,7 +66,9 @@
     <string name="bank_rate_missing">нет курса</string>
     <string name="branches_title">%1$s · %2$s\nОтделений: %3$d — нажмите на адрес, чтобы открыть карту</string>
     <string name="branches_title_all">%1$s · все отделения (%2$d)\nНажмите на адрес, чтобы открыть карту</string>
-    <string name="branches_unknown">Адреса отделений с курсом «%1$s» недоступны для этого источника курсов.</string>
+    <string name="branches_none">Для этого банка нет списка отделений с курсами. Обычно это значит, что такой курс действует в мобильном приложении или интернет-банке, а не в кассе.\n\nМожно найти отделения банка на карте и уточнить курс там.</string>
+    <string name="branches_loading">Загружаю адреса отделений…</string>
+    <string name="find_on_map">Найти на карте</string>
     <string name="close">Закрыть</string>
     <string name="no_map_app">Не найдено приложение карт</string>
     <string name="desc_info">Инструкция и о приложении</string>

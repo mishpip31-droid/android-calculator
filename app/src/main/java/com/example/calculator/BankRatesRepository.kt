@@ -40,7 +40,9 @@ class BankRatesRepository(context: Context) {
                     Bank(b.getString("id"), b.getString("name"), quotes, branches)
                 },
                 source = o.getString("source"),
-                updatedAt = o.getLong("t"),
+                // Данные старого формата (без адресов отделений) считаем устаревшими,
+                // чтобы они сразу перезагрузились.
+                updatedAt = if (o.optInt("v") < FORMAT_VERSION) 0 else o.getLong("t"),
             )
         } catch (e: Exception) {
             null
@@ -107,7 +109,8 @@ class BankRatesRepository(context: Context) {
             }
             banks.put(JSONObject().put("id", b.id).put("name", b.name).put("q", q).put("br", br))
         }
-        val o = JSONObject().put("banks", banks).put("source", rates.source).put("t", rates.updatedAt)
+        val o = JSONObject().put("banks", banks).put("source", rates.source)
+            .put("t", rates.updatedAt).put("v", FORMAT_VERSION)
         prefs.edit().putString(KEY, o.toString()).apply()
     }
 
@@ -129,5 +132,6 @@ class BankRatesRepository(context: Context) {
 
     private companion object {
         const val KEY = "rates"
+        const val FORMAT_VERSION = 2
     }
 }
