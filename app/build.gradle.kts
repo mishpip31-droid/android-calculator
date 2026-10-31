@@ -11,16 +11,30 @@ android {
         applicationId = "com.example.calculator"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        // В CI номер версии растёт с каждой сборкой, чтобы новый APK ставился поверх старого.
+        val build = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
+        versionCode = build
+        versionName = "1.$build"
+    }
+
+    signingConfigs {
+        // Постоянный ключ из репозитория: все сборки подписаны одинаково,
+        // поэтому обновления ставятся поверх без удаления приложения.
+        // Ключ публичный — для Google Play создайте свой и храните его в секрете.
+        create("release") {
+            storeFile = file("release.keystore")
+            storePassword = "calculator"
+            keyAlias = "calculator"
+            keyPassword = "calculator"
+        }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            // Debug-ключ, чтобы release-APK можно было сразу установить.
-            // Для публикации в Google Play замените на свой ключ.
-            signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 

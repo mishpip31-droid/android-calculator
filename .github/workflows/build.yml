@@ -5,6 +5,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,11 +25,26 @@ jobs:
         run: ./gradlew --no-daemon testDebugUnitTest
 
       - name: Build APK
-        run: ./gradlew --no-daemon assembleDebug assembleRelease
+        run: ./gradlew --no-daemon assembleRelease
+
+      - name: Rename APK
+        run: cp app/build/outputs/apk/release/app-release.apk calculator.apk
 
       - uses: actions/upload-artifact@v4
         with:
           name: calculator-apk
-          path: |
-            app/build/outputs/apk/debug/app-debug.apk
-            app/build/outputs/apk/release/app-release.apk
+          path: calculator.apk
+
+      # Публикуем APK в Releases: постоянная ссылка
+      # https://github.com/<owner>/<repo>/releases/latest/download/calculator.apk
+      - name: Publish release
+        if: github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.${{ github.run_number }}
+          name: Калькулятор 1.${{ github.run_number }}
+          body: |
+            Сборка из коммита ${{ github.sha }}.
+            Скачайте `calculator.apk` и откройте его на телефоне.
+          files: calculator.apk
+          make_latest: true
