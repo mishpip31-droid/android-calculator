@@ -45,4 +45,24 @@
     <string name="desc_notes_only">Показывать только записи с заметками</string>
     <string name="search_nothing">Ничего не найдено</string>
     <string name="notes_empty">Пока нет заметок.\nУдерживайте запись и выберите «Добавить заметку» — такие записи хранятся всегда.</string>
+    <string name="rate_source_label">Курс: %1$s</string>
+    <string name="rate_source_title">Какой курс использовать</string>
+    <string name="source_nbrb">НБРБ (официальный)</string>
+    <string name="source_best">Лучший курс в банках</string>
+    <string name="side_i_buy">Покупаю валюту</string>
+    <string name="side_i_sell">Продаю валюту</string>
+    <string name="side_hint_sell">Курс продажи банка — по нему вы покупаете валюту</string>
+    <string name="side_hint_buy">Курс покупки банка — по нему вы сдаёте валюту</string>
+    <string name="banks_title">Курсы банков Минска</string>
+    <string name="bank">Банк</string>
+    <string name="buy_column">Покупка</string>
+    <string name="sell_column">Продажа</string>
+    <string name="range_line">%1$s: мин %2$s (%3$s) · макс %4$s (%5$s)</string>
+    <string name="range_buy">Покупка</string>
+    <string name="range_sell">Продажа</string>
+    <string name="banks_loading">Загружаю курсы банков…</string>
+    <string name="banks_unavailable">Курсы банков недоступны — проверьте интернет и нажмите «Обновить».</string>
+    <string name="banks_footer">Источник: %1$s · обновлено %2$s. Выгоднейшие курсы выделены. Нажмите на банк, чтобы считать по его курсу.</string>
+    <string name="banks_footer_offline">нет связи</string>
+    <string name="bank_rate_missing">нет курса</string>
 </resources>

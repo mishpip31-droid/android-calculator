@@ -22,8 +22,24 @@ data class Rates(
     val nbrbDate: String,
     val updatedAt: Long,
     val btcSource: String? = null,
+    /** Цена биткоина в долларах (чтобы пересчитать BTC по курсу доллара в выбранном банке). */
+    val btcUsd: BigDecimal? = null,
 ) {
     fun has(c: Currency) = bynPerUnit.containsKey(c)
+
+    /**
+     * Курсы выбранного банка: USD и EUR — его покупка или продажа,
+     * BTC — мировая цена × курс доллара в этом банке.
+     */
+    fun withBank(bank: Bank, side: Side): Rates {
+        val map = linkedMapOf(Currency.BYN to BigDecimal.ONE)
+        val usd = bank.rate(Currency.USD, side)
+        val eur = bank.rate(Currency.EUR, side)
+        if (usd != null) map[Currency.USD] = usd
+        if (eur != null) map[Currency.EUR] = eur
+        if (usd != null && btcUsd != null) map[Currency.BTC] = btcUsd.multiply(usd, MC)
+        return copy(bynPerUnit = map)
+    }
 
     fun convert(amount: BigDecimal, from: Currency, to: Currency): BigDecimal? {
         val f = bynPerUnit[from] ?: return null
@@ -38,7 +54,7 @@ data class Rates(
         fun of(usd: BigDecimal, eur: BigDecimal, btcUsd: BigDecimal?, nbrbDate: String, updatedAt: Long, btcSource: String?): Rates {
             val map = linkedMapOf(Currency.BYN to BigDecimal.ONE, Currency.USD to usd, Currency.EUR to eur)
             if (btcUsd != null) map[Currency.BTC] = btcUsd.multiply(usd, MC)
-            return Rates(map, nbrbDate, updatedAt, if (btcUsd != null) btcSource else null)
+            return Rates(map, nbrbDate, updatedAt, if (btcUsd != null) btcSource else null, btcUsd)
         }
     }
 }
@@ -60,6 +76,12 @@ object Money {
         val frac = plain.substringAfter('.', "")
         val grouped = intPart.reversed().chunked(3).joinToString(" ").reversed()
         return if (frac.isEmpty()) grouped else "$grouped.$frac"
+    }
+
+    /** Курс банка: как на табло — минимум 2 знака, без лишних нулей: «2.935», «3.30». */
+    fun formatBankRate(value: BigDecimal): String {
+        val v = value.stripTrailingZeros()
+        return (if (v.scale() < 2) v.setScale(2) else v).toPlainString()
     }
 
     /** Разбирает ввод пользователя: «1 234,5», «100+50». Пусто или ошибка — null. */

@@ -1,7 +1,9 @@
 package com.example.calculator
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -19,56 +22,104 @@ import kotlin.concurrent.thread
 
 /**
  * Конвертер BYN / USD / EUR / BTC. Ввод в любой строке сразу пересчитывает остальные.
+ * Курс — официальный НБРБ, лучший по банкам или конкретного банка (покупка/продажа).
  */
 class ConverterActivity : Activity() {
     private lateinit var repository: RatesRepository
+    private lateinit var bankRepository: BankRatesRepository
     private lateinit var status: TextView
     private lateinit var refresh: View
+    private lateinit var sourceButton: TextView
+    private lateinit var sideToggle: View
+    private lateinit var sideBuyButton: TextView
+    private lateinit var sideSellButton: TextView
+    private lateinit var sideHint: TextView
+    private lateinit var tableUsd: TextView
+    private lateinit var tableEur: TextView
+    private lateinit var buyRange: TextView
+    private lateinit var sellRange: TextView
+    private lateinit var bankTable: LinearLayout
+    private lateinit var bankTableHeader: View
+    private lateinit var bankFooter: TextView
 
     private val fields = LinkedHashMap<Currency, EditText>()
     private val rateLabels = HashMap<Currency, TextView>()
 
+    /** Официальные курсы НБРБ (+ BTC). */
     private var rates: Rates? = null
+    private var bankRates: BankRates? = null
+
+    /** "nbrb", [BankRates.BEST_ID] или id банка. */
+    private var sourceId = SOURCE_NBRB
+
+    /** SELL — «покупаю валюту» (курс продажи банка), BUY — «продаю валюту». */
+    private var side = Side.SELL
+    private var tableCurrency = Currency.USD
+
     private var source: Currency = Currency.USD
     private var amount: BigDecimal? = null
     private var updating = false
-    private var loading = false
+    private var loadingNbrb = false
+    private var loadingBanks = false
+    private var banksFailed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_converter)
 
         repository = RatesRepository(this)
+        bankRepository = BankRatesRepository(this)
         status = findViewById(R.id.ratesStatus)
         refresh = findViewById(R.id.btnRefresh)
+        sourceButton = findViewById(R.id.btnRateSource)
+        sideToggle = findViewById(R.id.sideToggle)
+        sideBuyButton = findViewById(R.id.btnSideBuy)
+        sideSellButton = findViewById(R.id.btnSideSell)
+        sideHint = findViewById(R.id.sideHint)
+        tableUsd = findViewById(R.id.btnTableUsd)
+        tableEur = findViewById(R.id.btnTableEur)
+        buyRange = findViewById(R.id.bankBuyRange)
+        sellRange = findViewById(R.id.bankSellRange)
+        bankTable = findViewById(R.id.bankTable)
+        bankTableHeader = findViewById(R.id.bankTableHeader)
+        bankFooter = findViewById(R.id.bankFooter)
 
         findViewById<View>(R.id.btnBack).setOnClickListener { finish() }
-        refresh.setOnClickListener { loadRates(force = true) }
+        refresh.setOnClickListener { loadAll(force = true) }
         findViewById<View>(R.id.btnToCalculator).setOnClickListener { returnToCalculator() }
+        sourceButton.setOnClickListener { chooseSource() }
+        sideSellButton.setOnClickListener { setSide(Side.SELL) }
+        sideBuyButton.setOnClickListener { setSide(Side.BUY) }
+        tableUsd.setOnClickListener { setTableCurrency(Currency.USD) }
+        tableEur.setOnClickListener { setTableCurrency(Currency.EUR) }
 
         val container = findViewById<LinearLayout>(R.id.currencyRows)
         for (c in Currency.entries) addRow(container, c)
 
-        val prefs = getSharedPreferences("converter", MODE_PRIVATE)
-        source = savedInstanceState?.getString(KEY_SOURCE)?.let(Currency::valueOf)
-            ?: prefs.getString(KEY_SOURCE, null)?.let { runCatching { Currency.valueOf(it) }.getOrNull() }
-            ?: Currency.USD
+        val prefs = getSharedPreferences(PREFS, MODE_PRIVATE)
+        source = enumOr(savedInstanceState?.getString(KEY_SOURCE) ?: prefs.getString(KEY_SOURCE, null), Currency.USD)
+        sourceId = prefs.getString(KEY_RATE_SOURCE, SOURCE_NBRB) ?: SOURCE_NBRB
+        side = enumOr(prefs.getString(KEY_SIDE, null), Side.SELL)
+        tableCurrency = enumOr(prefs.getString(KEY_TABLE_CURRENCY, null), Currency.USD)
 
         rates = repository.cached()
-        showStatus()
+        bankRates = bankRepository.cached()
 
         // Начальная сумма: из поворота экрана или из калькулятора.
         val initial = savedInstanceState?.getString(KEY_AMOUNT)
             ?: intent.getStringExtra(EXTRA_VALUE)
             ?: "1"
-        setAmount(source, Money.parse(initial))
+        amount = Money.parse(initial)
+        updating = true
+        fields.getValue(source).setText(amount?.let { Money.format(it, source) } ?: "")
+        updating = false
         fields.getValue(source).apply {
             requestFocus()
             setSelection(text.length)
         }
 
-        val stale = rates?.let { System.currentTimeMillis() - it.updatedAt > REFRESH_AFTER_MS } ?: true
-        if (stale) loadRates(force = false)
+        renderAll()
+        loadAll(force = false)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -79,8 +130,15 @@ class ConverterActivity : Activity() {
 
     override fun onPause() {
         super.onPause()
-        getSharedPreferences("converter", MODE_PRIVATE).edit().putString(KEY_SOURCE, source.name).apply()
+        getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+            .putString(KEY_SOURCE, source.name)
+            .putString(KEY_RATE_SOURCE, sourceId)
+            .putString(KEY_SIDE, side.name)
+            .putString(KEY_TABLE_CURRENCY, tableCurrency.name)
+            .apply()
     }
+
+    // ---------- Строки валют ----------
 
     private fun addRow(container: LinearLayout, c: Currency) {
         val row = LayoutInflater.from(this).inflate(R.layout.item_currency, container, false)
@@ -107,18 +165,19 @@ class ConverterActivity : Activity() {
         container.addView(row)
     }
 
-    /** Ставит сумму в строку валюты и пересчитывает остальные. */
-    private fun setAmount(c: Currency, value: BigDecimal?) {
-        source = c
-        amount = value
-        updating = true
-        fields.getValue(c).setText(value?.let { Money.format(it, c) } ?: "")
-        updating = false
-        recalculate()
+    /** Курсы, по которым сейчас считаем: НБРБ или выбранного банка. */
+    private fun effectiveRates(): Rates? {
+        val base = rates
+        val bank = selectedBank() ?: return base
+        val fallback = base ?: Rates(mapOf(Currency.BYN to BigDecimal.ONE), "", 0)
+        return fallback.withBank(bank, side)
     }
 
+    private fun selectedBank(): Bank? =
+        if (sourceId == SOURCE_NBRB) null else bankRates?.bank(sourceId)
+
     private fun recalculate() {
-        val r = rates
+        val r = effectiveRates()
         val value = amount
         updating = true
         for ((c, field) in fields) {
@@ -129,40 +188,104 @@ class ConverterActivity : Activity() {
         updating = false
     }
 
-    private fun loadRates(force: Boolean) {
-        if (loading) return
-        loading = true
-        refresh.isEnabled = false
-        status.text = getString(R.string.rates_loading)
-        thread {
-            val result = runCatching { repository.fetch() }
-            runOnUiThread {
-                if (isDestroyed) return@runOnUiThread
-                loading = false
-                refresh.isEnabled = true
-                result.onSuccess {
-                    rates = it
-                    recalculate()
-                    showStatus()
-                }.onFailure {
-                    showStatus(failed = true, manual = force)
+    // ---------- Выбор курса ----------
+
+    private fun chooseSource() {
+        val banks = bankRates?.banks.orEmpty()
+        val ids = ArrayList<String>()
+        val labels = ArrayList<String>()
+        ids += SOURCE_NBRB
+        labels += getString(R.string.source_nbrb)
+        if (banks.isNotEmpty()) {
+            ids += BankRates.BEST_ID
+            labels += getString(R.string.source_best)
+            for (b in banks) {
+                ids += b.id
+                labels += "${b.name}  ·  ${quoteText(b, Currency.USD)}"
+            }
+        }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.rate_source_title)
+            .setSingleChoiceItems(labels.toTypedArray(), ids.indexOf(sourceId).coerceAtLeast(0)) { dialog, which ->
+                selectSource(ids[which])
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun selectSource(id: String) {
+        sourceId = id
+        renderAll()
+    }
+
+    private fun setSide(newSide: Side) {
+        side = newSide
+        renderAll()
+    }
+
+    private fun setTableCurrency(c: Currency) {
+        tableCurrency = c
+        renderBankTable()
+    }
+
+    /** «USD 2.935 / 2.975» — покупка / продажа. */
+    private fun quoteText(bank: Bank, c: Currency): String {
+        val q = bank.quotes[c] ?: return "${c.name} —"
+        return "${c.name} ${q.buy?.let(Money::formatBankRate) ?: "—"} / ${q.sell?.let(Money::formatBankRate) ?: "—"}"
+    }
+
+    // ---------- Отрисовка ----------
+
+    private fun renderAll() {
+        val bank = selectedBank()
+        val bankMode = sourceId != SOURCE_NBRB
+        sourceButton.text = getString(
+            R.string.rate_source_label,
+            when {
+                !bankMode -> getString(R.string.source_nbrb)
+                sourceId == BankRates.BEST_ID -> getString(R.string.source_best)
+                else -> bank?.name ?: sourceId
+            },
+        )
+        sideToggle.visibility = if (bankMode) View.VISIBLE else View.GONE
+        sideHint.visibility = if (bankMode) View.VISIBLE else View.GONE
+        sideSellButton.isSelected = side == Side.SELL
+        sideBuyButton.isSelected = side == Side.BUY
+        sideHint.setText(if (side == Side.SELL) R.string.side_hint_sell else R.string.side_hint_buy)
+
+        showRateLabels()
+        showStatus()
+        recalculate()
+        renderBankTable()
+    }
+
+    private fun showRateLabels() {
+        val r = effectiveRates()
+        val bank = selectedBank()
+        val sideName = getString(if (side == Side.BUY) R.string.range_buy else R.string.range_sell).lowercase()
+        for (c in Currency.entries) {
+            val label = rateLabels.getValue(c)
+            label.visibility = if (c == Currency.BYN) View.GONE else View.VISIBLE
+            label.text = when {
+                c == Currency.BYN -> ""
+                r == null || !r.has(c) ->
+                    if (bank != null && c != Currency.BTC) getString(R.string.bank_rate_missing) else getString(R.string.rate_unknown)
+                else -> buildString {
+                    val value = r.bynPerUnit.getValue(c)
+                    append("1 ${c.name} = ")
+                    append(if (bank != null && c != Currency.BTC) Money.formatBankRate(value) else Money.formatRate(value))
+                    append(" BYN")
+                    if (bank != null && c != Currency.BTC) append(" · ").append(sideName)
                 }
             }
         }
     }
 
-    private fun showStatus(failed: Boolean = false, manual: Boolean = false) {
+    private fun showStatus(failed: Boolean = false) {
         val r = rates
-        for (c in Currency.entries) {
-            val label = rateLabels.getValue(c)
-            label.text = when {
-                c == Currency.BYN -> ""
-                r == null || !r.has(c) -> getString(R.string.rate_unknown)
-                else -> "1 ${c.name} = ${Money.formatRate(r.bynPerUnit.getValue(c))} BYN"
-            }
-            label.visibility = if (c == Currency.BYN) View.GONE else View.VISIBLE
-        }
         status.text = when {
+            loadingNbrb && r == null -> getString(R.string.rates_loading)
             r == null && failed -> getString(R.string.rates_no_connection_empty)
             r == null -> getString(R.string.rates_loading)
             else -> buildString {
@@ -173,9 +296,130 @@ class ConverterActivity : Activity() {
                 if (failed) append(" · ").append(getString(R.string.rates_offline))
             }
         }
-        if (failed && manual && r != null) {
-            android.widget.Toast.makeText(this, R.string.rates_offline_toast, android.widget.Toast.LENGTH_SHORT).show()
+    }
+
+    private fun renderBankTable() {
+        tableUsd.isSelected = tableCurrency == Currency.USD
+        tableEur.isSelected = tableCurrency == Currency.EUR
+        bankTable.removeAllViews()
+        val br = bankRates
+        if (br == null) {
+            buyRange.text = getString(if (loadingBanks) R.string.banks_loading else R.string.banks_unavailable)
+            sellRange.visibility = View.GONE
+            bankTableHeader.visibility = View.GONE
+            bankFooter.visibility = View.GONE
+            return
         }
+        sellRange.visibility = View.VISIBLE
+        bankTableHeader.visibility = View.VISIBLE
+        bankFooter.visibility = View.VISIBLE
+
+        val c = tableCurrency
+        val buyExt = br.extremes(c, Side.BUY)
+        val sellExt = br.extremes(c, Side.SELL)
+        buyRange.text = rangeText(R.string.range_buy, buyExt)
+        sellRange.text = rangeText(R.string.range_sell, sellExt)
+
+        // Выгодно: сдать — по самой высокой покупке, купить — по самой низкой продаже.
+        val bestBuy = buyExt?.max?.value
+        val bestSell = sellExt?.min?.value
+        val accent = getColor(R.color.accent)
+        val primary = getColor(R.color.text_primary)
+        for (bank in br.banks) {
+            val q = bank.quotes[c] ?: continue
+            val row = LayoutInflater.from(this).inflate(R.layout.item_bank_row, bankTable, false)
+            row.findViewById<TextView>(R.id.bankName).text = bank.name
+            fun cell(id: Int, value: BigDecimal?, best: BigDecimal?) {
+                val tv = row.findViewById<TextView>(id)
+                tv.text = value?.let(Money::formatBankRate) ?: "—"
+                val isBest = value != null && best != null && value.compareTo(best) == 0
+                tv.setTextColor(if (isBest) accent else primary)
+                tv.setTypeface(null, if (isBest) Typeface.BOLD else Typeface.NORMAL)
+            }
+            cell(R.id.bankBuy, q.buy, bestBuy)
+            cell(R.id.bankSell, q.sell, bestSell)
+            if (bank.id == sourceId) row.setBackgroundResource(R.drawable.selected_row_bg)
+            row.setOnClickListener { selectSource(bank.id) }
+            bankTable.addView(row)
+        }
+        bankFooter.text = buildString {
+            append(getString(R.string.banks_footer, br.source, formatUpdated(br.updatedAt)))
+            if (banksFailed) append(" (").append(getString(R.string.banks_footer_offline)).append(')')
+        }
+    }
+
+    private fun rangeText(labelRes: Int, ext: Extremes?): String {
+        if (ext == null) return "${getString(labelRes)}: —"
+        return getString(
+            R.string.range_line,
+            getString(labelRes),
+            Money.formatBankRate(ext.min.value), bankNames(ext.min.banks),
+            Money.formatBankRate(ext.max.value), bankNames(ext.max.banks),
+        )
+    }
+
+    private fun bankNames(names: List<String>) =
+        if (names.size <= 2) names.joinToString(", ") else "${names[0]} и ещё ${names.size - 1}"
+
+    // ---------- Загрузка ----------
+
+    private fun loadAll(force: Boolean) {
+        val now = System.currentTimeMillis()
+        val nbrbStale = rates?.let { now - it.updatedAt > REFRESH_AFTER_MS } ?: true
+        val banksStale = bankRates?.let { now - it.updatedAt > REFRESH_AFTER_MS } ?: true
+        if (force || nbrbStale) loadNbrb(manual = force)
+        if (force || banksStale) loadBanks()
+    }
+
+    private fun loadNbrb(manual: Boolean) {
+        if (loadingNbrb) return
+        loadingNbrb = true
+        updateRefreshButton()
+        showStatus()
+        thread {
+            val result = runCatching { repository.fetch() }
+            runOnUiThread {
+                if (isDestroyed) return@runOnUiThread
+                loadingNbrb = false
+                updateRefreshButton()
+                result.onSuccess {
+                    rates = it
+                    renderAll()
+                }.onFailure {
+                    showStatus(failed = true)
+                    if (manual && rates != null) {
+                        Toast.makeText(this, R.string.rates_offline_toast, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun loadBanks() {
+        if (loadingBanks) return
+        loadingBanks = true
+        updateRefreshButton()
+        if (bankRates == null) renderBankTable()
+        thread {
+            val result = runCatching { bankRepository.fetch() }
+            runOnUiThread {
+                if (isDestroyed) return@runOnUiThread
+                loadingBanks = false
+                updateRefreshButton()
+                result.onSuccess {
+                    bankRates = it
+                    banksFailed = false
+                }.onFailure {
+                    banksFailed = true
+                }
+                renderAll()
+            }
+        }
+    }
+
+    private fun updateRefreshButton() {
+        refresh.isEnabled = !loadingNbrb && !loadingBanks
+        refresh.alpha = if (refresh.isEnabled) 1f else 0.4f
     }
 
     private fun formatDate(isoDate: String): String = try {
@@ -198,11 +442,19 @@ class ConverterActivity : Activity() {
         finish()
     }
 
+    private inline fun <reified E : Enum<E>> enumOr(name: String?, default: E): E =
+        name?.let { n -> enumValues<E>().firstOrNull { it.name == n } } ?: default
+
     companion object {
         /** Число в обычной записи (минус — ASCII «-»). */
         const val EXTRA_VALUE = "value"
+        private const val PREFS = "converter"
         private const val KEY_SOURCE = "source"
         private const val KEY_AMOUNT = "amount"
+        private const val KEY_RATE_SOURCE = "rate_source"
+        private const val KEY_SIDE = "side"
+        private const val KEY_TABLE_CURRENCY = "table_currency"
+        private const val SOURCE_NBRB = "nbrb"
         private const val REFRESH_AFTER_MS = 60 * 60 * 1000L
     }
 }
