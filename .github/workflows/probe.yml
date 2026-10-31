@@ -9,23 +9,29 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Probe
+      - name: Probe myfin
         run: |
-          probe() {
-            echo "=================== $1"
-            curl -sS -L -m 20 -A "Mozilla/5.0 (Linux; Android 14) Calculator" -o body.txt -w "HTTP %{http_code} size %{size_download} type %{content_type}\n" "$1" || true
-            head -c ${2:-1500} body.txt; echo
-          }
-          probe "https://belarusbank.by/api/kursExchange?city=%D0%9C%D0%B8%D0%BD%D1%81%D0%BA" 1200
-          probe "https://belarusbank.by/api/kursExchange" 600
-          probe "https://developerhub.alfabank.by:8273/partner/1.0.1/public/rates" 2500
-          probe "https://developerhub.alfabank.by:8273/partner/1.0.0/public/rates" 600
-          probe "https://kurs.onliner.by/sdapi/kurs/api/bestrate?currency=USD&type=nbrb" 800
-          probe "https://kurs.onliner.by/sdapi/kurs/api/bestrate" 800
-          probe "https://myfin.by/currency/minsk" 300
-          echo "---- myfin table markers"; grep -o 'currencies-courses__row[^>]*' body.txt | head -5; grep -c 'data-bank' body.txt || true
-          grep -o '<tr[^>]*data-bank[^>]*>' body.txt | head -3 || true
-          probe "https://select.by/kurs/" 300
-          echo "---- select markers"; grep -o 'class="[^"]*bank[^"]*"' body.txt | sort | uniq -c | head -10
-          probe "https://www.priorbank.by/api/currency/rates" 600
-          probe "https://www.bnb.by/api/rates" 300
+          curl -sS -L -m 30 -A "Mozilla/5.0 (Linux; Android 14) Calculator" -o m.html "https://myfin.by/currency/minsk"
+          python3 - <<'PY'
+          import re
+          s = open('m.html', encoding='utf-8').read()
+          print("len", len(s))
+          rows = [m.start() for m in re.finditer(r'<tr class="currencies-courses__row-main', s)]
+          print("rows", len(rows))
+          kinds = re.findall(r'<tr class="currencies-courses__row-main[^"]*" data-row-type="([^"]*)" data-bank-sef-alias="([^"]*)"', s)
+          print("kinds", kinds[:60])
+          # first non-ad row
+          for i, pos in enumerate(rows):
+              chunk = s[pos:pos+4000]
+              if 'data-row-type="ad"' not in chunk[:200]:
+                  print("---- NON-AD ROW", i)
+                  print(re.sub(r'\s+', ' ', chunk[:3500]))
+                  break
+          print("---- AD ROW 0")
+          print(re.sub(r'\s+', ' ', s[rows[0]:rows[0]+3000]))
+          # table headers
+          h = s.find('currencies-courses__table')
+          print("---- TABLE HEAD")
+          print(re.sub(r'\s+', ' ', s[h-200:h+2500]))
+          print("---- json hints", re.findall(r'(https?://[^"\']*(?:api|json)[^"\']*)', s)[:20])
+          PY
