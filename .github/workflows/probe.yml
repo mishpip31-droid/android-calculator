@@ -1,0 +1,31 @@
+name: Probe bank rate sources (temporary)
+
+on:
+  push:
+    paths: [.github/workflows/probe.yml]
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe myfin branches
+        run: |
+          curl -sS -L -m 30 -A "Mozilla/5.0 (Linux; Android) Calculator" -H "Accept-Language: ru" -o m.html "https://myfin.by/currency/eur"
+          python3 - <<'PY'
+          import re
+          s = open('m.html', encoding='utf-8').read()
+          print("len", len(s), "branch-name count", s.count('currencies-courses__branch-name'))
+          BR = re.compile(r'<tr data-bank-sef-alias="([^"]*)"[^>]*>(.*?)</tr>', re.S)
+          rows = BR.findall(s)
+          print("branch rows by my regex:", len(rows))
+          i = s.find('currencies-courses__branch-name')
+          print("---- CONTEXT around first branch-name")
+          print(re.sub(r'\s+', ' ', s[i-700:i+900]))
+          for alias in ['bnbank', 'belswissbank', 'statusbank']:
+              m = re.search(r'<tr class="currencies-courses__row-main[^"]*"[^>]*data-bank-sef-alias="%s"[^>]*>(.*?)</tr>' % alias, s, re.S)
+              print("---- MAIN ROW", alias)
+              print(re.sub(r'\s+', ' ', m.group(0)[:1500]) if m else None)
+          # how are filial rows loaded? look for ajax url hints
+          print("---- hints", set(re.findall(r'(/[a-z_/-]*(?:filial|branch|department)[a-z_/-]*)', s))[:0] if False else sorted(set(re.findall(r'["\'](/[a-zA-Z_/-]*(?:filial|branch|departments?|ajax)[a-zA-Z_/?=-]*)["\']', s)))[:30])
+          PY
